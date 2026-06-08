@@ -312,7 +312,7 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
       <div class="s-box"><i class="ti ti-search"></i><input class="s-inp" placeholder="搜索素材、文案…" type="text"></div>
       <button class="tb-btn g"><i class="ti ti-adjustments-horizontal"></i>过滤</button>
       <button class="tb-btn p"><i class="ti ti-plus"></i>导入</button>
-      <div class="tb-av">王</div>
+      <div class="tb-av" id="nav-avatar" onclick="editName()" title="点击修改名字">?</div>
     </div>
   </header>
 
@@ -323,7 +323,7 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
       <div class="hero-inner">
         <div class="hero-left">
           <div class="hero-hi">Good morning</div>
-          <div class="hero-name">你好，王小明 <em>✦</em></div>
+          <div class="hero-name">你好，<span id="user-name" onclick="editName()" title="点击修改名字" style="cursor:pointer;border-bottom:1px dashed var(--caramel);padding-bottom:1px;">访客</span> <em>✦</em></div>
           <div class="hero-sub">今天有 <strong>2 件必须做</strong> · 1 件建议做</div>
         </div>
         <div class="compose-col">
@@ -582,6 +582,25 @@ function changeMonth(dir) {
   renderCal();
 }
 renderCal();
+
+// ── User name (customizable) ──
+(function() {
+  const saved = localStorage.getItem('userName');
+  const av2 = document.getElementById('nav-avatar'); if(av2 && saved) av2.textContent = saved[0];
+  const el = document.getElementById('user-name');
+  if (el && saved) el.textContent = saved;
+})();
+
+function editName() {
+  const current = localStorage.getItem('userName') || '访客';
+  const newName = prompt('请输入你的名字：', current);
+  if (newName && newName.trim()) {
+    const trimmed = newName.trim();
+    localStorage.setItem('userName', trimmed);
+    const el = document.getElementById('user-name');
+    if (el) el.textContent = trimmed;
+  }
+}
 </script>
 </body>
 </html>

@@ -439,13 +439,13 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
       <span class="s-count" id="s-count"></span>
       <button class="tbtn g"><i class="ti ti-adjustments-horizontal"></i>过滤</button>
       <button class="tbtn p" onclick="showImportGuide()"><i class="ti ti-plus"></i>新增</button>
-      <div class="tb-av">王</div>
+      <div class="tb-av" id="nav-avatar" onclick="editUserName()">?</div>
     </div>
     <div class="tb-r" id="tbr-bd" style="display:none;">
       <button class="tbtn g" onclick="prevBD()"><i class="ti ti-chevron-left"></i>上一篇</button>
       <button class="tbtn g" onclick="nextBD()">下一篇<i class="ti ti-chevron-right"></i></button>
       <button class="tbtn p"><i class="ti ti-sparkles"></i>一键提取素材</button>
-      <div class="tb-av">王</div>
+      <div class="tb-av" id="nav-avatar" onclick="editUserName()">?</div>
     </div>
   </header>
 
@@ -911,6 +911,22 @@ function nextBD(){const i=BREAKDOWNS.findIndex(b=>b.id===curBD.id);if(i<BREAKDOW
 function showImportGuide(){}
 
 renderCards();
+
+// User name
+(function(){
+  const n = localStorage.getItem('userName');
+  const el = document.getElementById('nav-avatar');
+  if(el && n) el.textContent = n.charAt(0).toUpperCase() || n[0];
+})();
+function editUserName(){
+  const cur = localStorage.getItem('userName') || '';
+  const n = prompt('请输入你的名字：', cur);
+  if(n && n.trim()){
+    localStorage.setItem('userName', n.trim());
+    const el = document.getElementById('nav-avatar');
+    if(el) el.textContent = n.trim()[0];
+  }
+}
 </script>
 </body>
 </html>

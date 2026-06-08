@@ -299,7 +299,7 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
         <span id="pending-count">0 篇草稿待排期</span>
       </div>
       <button class="tbtn p" onclick="openModal(null)"><i class="ti ti-plus"></i>新建排期</button>
-      <div class="tb-av">王</div>
+      <div class="tb-av" id="nav-avatar" onclick="editUserName()">?</div>
     </div>
   </header>
 
@@ -913,6 +913,22 @@ function showToast(msg) {
 document.getElementById('modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
+
+// User name
+(function(){
+  const n = localStorage.getItem('userName');
+  const el = document.getElementById('nav-avatar');
+  if(el && n) el.textContent = n.charAt(0).toUpperCase() || n[0];
+})();
+function editUserName(){
+  const cur = localStorage.getItem('userName') || '';
+  const n = prompt('请输入你的名字：', cur);
+  if(n && n.trim()){
+    localStorage.setItem('userName', n.trim());
+    const el = document.getElementById('nav-avatar');
+    if(el) el.textContent = n.trim()[0];
+  }
+}
 </script>
 </body>
 </html>

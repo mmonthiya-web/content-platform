@@ -303,7 +303,7 @@ textarea.ef-inp{line-height:1.7;}
     <div class="tb-r">
       <button class="tbtn g"><i class="ti ti-adjustments-horizontal"></i>过滤</button>
       <button class="tbtn p" onclick="newDraft()"><i class="ti ti-plus"></i>新建草稿</button>
-      <div class="tb-av">王</div>
+      <div class="tb-av" id="nav-avatar" onclick="editUserName()">?</div>
     </div>
   </header>
 
@@ -852,6 +852,22 @@ function newDraft() {
 function showToast(msg) {
   const t = document.getElementById('toast'); t.textContent = msg;
   t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// User name
+(function(){
+  const n = localStorage.getItem('userName');
+  const el = document.getElementById('nav-avatar');
+  if(el && n) el.textContent = n.charAt(0).toUpperCase() || n[0];
+})();
+function editUserName(){
+  const cur = localStorage.getItem('userName') || '';
+  const n = prompt('请输入你的名字：', cur);
+  if(n && n.trim()){
+    localStorage.setItem('userName', n.trim());
+    const el = document.getElementById('nav-avatar');
+    if(el) el.textContent = n.trim()[0];
+  }
 }
 </script>
 </body>

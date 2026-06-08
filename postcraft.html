@@ -432,7 +432,7 @@ textarea.finp{line-height:1.6;}
     <div class="tb-r">
       <button class="tbtn g" onclick="goView('brand')"><i class="ti ti-settings"></i>Brand Context</button>
       <button class="tbtn g" onclick="showHistory()"><i class="ti ti-clock"></i>历史</button>
-      <div class="tb-av">王</div>
+      <div class="tb-av" id="nav-avatar" onclick="editUserName()">?</div>
     </div>
   </header>
 
@@ -1249,6 +1249,22 @@ function parseJSON(raw) {
 function showToast(msg) {
   const t = document.getElementById('toast'); t.textContent = msg;
   t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// User name
+(function(){
+  const n = localStorage.getItem('userName');
+  const el = document.getElementById('nav-avatar');
+  if(el && n) el.textContent = n.charAt(0).toUpperCase() || n[0];
+})();
+function editUserName(){
+  const cur = localStorage.getItem('userName') || '';
+  const n = prompt('请输入你的名字：', cur);
+  if(n && n.trim()){
+    localStorage.setItem('userName', n.trim());
+    const el = document.getElementById('nav-avatar');
+    if(el) el.textContent = n.trim()[0];
+  }
 }
 </script>
 </body>
