@@ -406,21 +406,22 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
     </div>
     <div class="sbg">
       <div class="sbg-lbl">内容库</div>
-      <div class="ni" onclick="setTypeFromSidebar('all')"><i class="ti ti-grid-dots"></i><span>全部素材</span><span class="nb">128</span></div>
-      <div class="ni" onclick="setTypeFromSidebar('inspire')"><i class="ti ti-bulb"></i><span>灵感</span><span class="nb">34</span></div>
-      <div class="ni" onclick="setTypeFromSidebar('faq')"><i class="ti ti-message-dots"></i><span>高频问题</span><span class="nb">12</span></div>
-      <div class="ni" onclick="openBDView()"><i class="ti ti-microscope"></i><span>爆款拆解</span><span class="nb">7</span></div>
+      <div class="ni" onclick="setTypeFromSidebar('all')"><i class="ti ti-grid-dots"></i><span>全部素材</span><span class="nb">0</span></div>
+      <div class="ni" onclick="setTypeFromSidebar('inspire')"><i class="ti ti-bulb"></i><span>灵感</span><span class="nb">0</span></div>
+      <div class="ni" onclick="setTypeFromSidebar('faq')"><i class="ti ti-message-dots"></i><span>高频问题</span><span class="nb">0</span></div>
+      <div class="ni" onclick="openBDView()"><i class="ti ti-microscope"></i><span>爆款拆解</span><span class="nb">0</span></div>
     </div>
     <div class="sbg">
       <div class="sbg-lbl">创作中心</div>
-      <div class="ni" onclick="setTypeFromSidebar('hook')"><i class="ti ti-hook"></i><span>Hook</span><span class="nb">21</span></div>
-      <div class="ni" onclick="setTypeFromSidebar('title')"><i class="ti ti-text-size"></i><span>标题</span><span class="nb">45</span></div>
-      <div class="ni" onclick="setTypeFromSidebar('cta')"><i class="ti ti-cursor-text"></i><span>CTA</span><span class="nb">18</span></div>
+      <div class="ni" onclick="setTypeFromSidebar('hook')"><i class="ti ti-hook"></i><span>Hook</span><span class="nb">0</span></div>
+      <div class="ni" onclick="setTypeFromSidebar('title')"><i class="ti ti-text-size"></i><span>标题</span><span class="nb">0</span></div>
+      <div class="ni" onclick="setTypeFromSidebar('cta')"><i class="ti ti-cursor-text"></i><span>CTA</span><span class="nb">0</span></div>
     </div>
   </div>
   <div class="sb-foot">
     <button class="sb-cta"><i class="ti ti-download"></i>导入分析结果</button>
     <button class="sb-ghost"><i class="ti ti-settings"></i>设置</button>
+    <button class="sb-ghost" onclick="window.location.href='guide.html'"><i class="ti ti-book"></i>使用说明</button>
   </div>
 </aside>
 
@@ -453,13 +454,13 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
     <!-- unified type filter bar -->
     <div class="type-bar">
       <div class="type-chips" id="type-chips">
-        <button class="tchip on" data-type="all" onclick="filterType('all',this)">全部 <span class="tc">128</span></button>
-        <button class="tchip" data-type="inspire" onclick="filterType('inspire',this)">灵感 <span class="tc">34</span></button>
-        <button class="tchip" data-type="hook" onclick="filterType('hook',this)">Hook <span class="tc">21</span></button>
-        <button class="tchip" data-type="title" onclick="filterType('title',this)">标题 <span class="tc">45</span></button>
-        <button class="tchip" data-type="cta" onclick="filterType('cta',this)">CTA <span class="tc">18</span></button>
-        <button class="tchip bd-chip" data-type="breakdown" onclick="openBDView()">爆款拆解 <span class="tc">7</span></button>
-        <button class="tchip" data-type="faq" onclick="filterType('faq',this)">高频问题 <span class="tc">12</span></button>
+        <button class="tchip on" data-type="all" onclick="filterType('all',this)">全部 <span class="tc">0</span></button>
+        <button class="tchip" data-type="inspire" onclick="filterType('inspire',this)">灵感 <span class="tc">0</span></button>
+        <button class="tchip" data-type="hook" onclick="filterType('hook',this)">Hook <span class="tc">0</span></button>
+        <button class="tchip" data-type="title" onclick="filterType('title',this)">标题 <span class="tc">0</span></button>
+        <button class="tchip" data-type="cta" onclick="filterType('cta',this)">CTA <span class="tc">0</span></button>
+        <button class="tchip bd-chip" data-type="breakdown" onclick="openBDView()">爆款拆解 <span class="tc">0</span></button>
+        <button class="tchip" data-type="faq" onclick="filterType('faq',this)">高频问题 <span class="tc">0</span></button>
       </div>
       <div class="type-divider"></div>
       <div class="status-chips">
@@ -600,27 +601,8 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
 
 <script>
 /* ═══ DATA ═══ */
-const ITEMS=[
-  {id:1,type:'inspire',title:'越懒的人越会变美？反直觉护肤法',body:'很多人以为护肤需要繁琐步骤才有效，但越来越多皮肤科医生指出，过度护肤才是皮肤问题的根源。',source:['爆款拆解 #07','高频问题 ×8'],status:'drafted',date:'06/04',related:[{type:'hook',title:'你有没有发现，越懒的人反而皮肤更好？'},{type:'title',title:'越懒越美：反直觉护肤方案'},{type:'cta',title:'👇 点击获取3步极简护肤清单'}]},
-  {id:2,type:'inspire',title:'防晒误区大盘点｜你每天做错的那件事',body:'物理防晒 vs 化学防晒、补涂时机、叠涂顺序——大多数人至少在其中一个环节上犯了错。',source:['爆款拆解 #07','高频问题 ×5'],status:'unused',date:'06/03',related:[{type:'hook',title:'你知道自己用了十年的防晒方式是错的吗？'}]},
-  {id:3,type:'inspire',title:'28天皮肤改善计划：从油痘肌到哑光肌',body:'系统性的护肤改善需要时间，但只要方法对了，28天内可以看到明显变化。',source:['高频问题 ×12'],status:'published',date:'06/01',related:[{type:'hook',title:'如果你的皮肤也像我一样一团糟…'}]},
-  {id:4,type:'inspire',title:'敏感肌选防晒的4个关键指标',body:'PA值、SPF值、成分表、质地——四个维度帮敏感肌选到合适的防晒。',source:['爆款拆解 #05'],status:'unused',date:'05/30',related:[]},
-  {id:5,type:'hook',title:'你有没有发现，越懒的人反而皮肤更好？',body:'来自爆款拆解#07提取的悬念式开场，制造认知反差，吸引有护肤困惑的用户继续阅读。',source:['爆款拆解 #07'],status:'drafted',date:'06/04',related:[{type:'inspire',title:'越懒的人越会变美？反直觉护肤法'}]},
-  {id:6,type:'hook',title:'你知道自己用了十年的防晒方式是错的吗？',body:'挑战用户既有认知，激发防御性阅读动机。适合科普类内容的开场。',source:['爆款拆解 #07'],status:'unused',date:'06/03',related:[]},
-  {id:7,type:'hook',title:'皮肤科医生不让我发这条内容，但我发了',body:'制造禁忌感和神秘感，极强的点击欲望。适合揭秘类内容。',source:['AI生成'],status:'unused',date:'05/20',related:[]},
-  {id:8,type:'title',title:'越懒越美：反直觉护肤方案',body:'悬念+结果型标题，制造认知冲突同时给出价值承诺。',source:['爆款拆解 #07'],status:'drafted',date:'06/04',related:[]},
-  {id:9,type:'title',title:'防晒误区科普｜皮肤科医生不会告诉你',body:'权威背书+秘密揭露，双重吸引力。适合专业科普内容。',source:['爆款拆解 #07'],status:'unused',date:'06/03',related:[]},
-  {id:10,type:'title',title:'28天蜕变计划：科学改善油痘肌',body:'时间承诺+目标明确，给用户清晰的预期和期待感。',source:['高频问题 ×12'],status:'published',date:'06/01',related:[]},
-  {id:11,type:'cta',title:'👇 点击获取3步极简护肤清单',body:'数字具体化+行动指引，点击率优于模糊型CTA。',source:['AI生成'],status:'drafted',date:'06/04',related:[]},
-  {id:12,type:'cta',title:'存下来！这是我用过最有用的护肤公式',body:'社交证明型CTA，触发收藏行为。',source:['爆款拆解 #07'],status:'unused',date:'06/02',related:[]},
-  {id:13,type:'faq',title:'敏感肌可以用哪些防晒？',body:'评论区出现 12 次。主要问：成分安全性、物理还是化学、推荐品牌。',source:['评论区'],status:'unused',date:'06/03',related:[]},
-  {id:14,type:'faq',title:'护肤步骤到底几步最好？',body:'评论区出现 8 次。核心困惑：精简和全面之间如何取舍。',source:['评论区'],status:'drafted',date:'06/01',related:[]},
-];
-const BREAKDOWNS=[
-  {id:'bd07',num:'#07',title:'The Ordinary 果酸水使用方法保姆级攻略',tags:['护肤','功效成分'],date:'2026/6/4',likes:'12,400',saves:'8,900',extracted:{inspire:3,hook:2,title:2,cta:1},url:'https://www.xiaohongshu.com/discovery/item/69a901130000000022021ab',summary:'详细拆解 TO 果酸水新手耐受方法、三周循序渐进步骤、身体多场景隐藏用法，以及干脸用、防晒必做、忌叠涂等关键注意事项。',kw:['The Ordinary果酸水','果酸水用法','新手耐受','TO护肤','闭口粉刺'],hook:'正确使用教程来了，快码住，新手切记先建立耐受！',emotion:'焦虑',trigger:'果酸属于功效性成分，用错会烂脸，新手普遍有使用恐惧，保姆级加快码住直接解除焦虑触发收藏。',titleType:'利益型',analysis:'保姆级攻略直接承诺内容详尽程度，暗示看完就能正确使用不踩雷，对有意购入的人吸引力极强。',formula:'[无广背书建立信任]+[产品原理科普]+[新手耐受三阶段步骤]+[身体多场景隐藏用法]+[重点注意事项清单]',formulaEg:'水杨酸正确使用攻略，新手别急着每天用，三步建立耐受用对了才不会烂脸。',cta:'收藏这篇，按三周耐受步骤来，坚持用对闭口真的有效果。',ctaGoal:'收藏转化+种草购买',interaction:'开头主动声明全程无广没收一分钱，反而激发评论区真实追问使用体验，带动高互动。',xtags:['TheOrdinary果酸水','果酸水用法','新手耐受教程','闭口粉刺','功效护肤'],nextSteps:[{done:true,text:'已提取 Hook、标题、CTA 进素材库',tag:'已完成'},{done:false,text:'3条灵感还未转为草稿',tag:'去创作'},{done:false,text:'文案公式尚未入库',tag:'添加'}]},
-  {id:'bd06',num:'#06',title:'越懒的人皮肤越好？极简护肤系列',tags:['护肤'],date:'2026/6/2',likes:'9,800',saves:'7,200',extracted:{inspire:4,hook:3,title:2,cta:0},url:'https://www.xiaohongshu.com',summary:'拆解"极简护肤"爆款逻辑，分析反直觉标题如何制造认知冲突，以及无步骤感内容结构为何更容易获得收藏。',kw:['极简护肤','懒人护肤','护肤误区','最少步骤'],hook:'你有没有发现，越懒的人反而皮肤越好？',emotion:'好奇',trigger:'反直觉命题引发强烈的认知不协调，促使用户点击验证自己的判断。',titleType:'反直觉型',analysis:'颠覆用户既有认知是最强的点击驱动力，配合护肤这个高频话题，传播力极强。',formula:'[反直觉标题]+[科学依据]+[极简步骤拆解]+[对比验证]+[收藏型CTA]',formulaEg:'越不折腾皮肤越好？皮肤科医生的护肤步骤只有这3个。',cta:'收藏这篇，从明天开始只做这3步，坚持一个月告诉我结果。',ctaGoal:'收藏+评论互动',interaction:'在评论区主动回复"懒人护肤反馈"，引导UGC内容，形成正向循环。',xtags:['极简护肤','懒人护肤','护肤步骤','皮肤科医生'],nextSteps:[{done:true,text:'已提取 Hook、灵感进素材库',tag:'已完成'},{done:false,text:'4条灵感还未转为草稿',tag:'去创作'},{done:false,text:'未生成 CTA',tag:'去生成'}]},
-  {id:'bd05',num:'#05',title:'防晒合集：误区揭露型内容分析',tags:['防晒'],date:'2026/5/30',likes:'7,300',saves:'5,600',extracted:{inspire:2,hook:2,title:3,cta:1},url:'https://www.xiaohongshu.com',summary:'系统分析防晒误区类内容，发现"误区揭露"结构比"正面讲解"点赞率高2.3倍，核心原因是用户自我保护本能被激活。',kw:['防晒误区','防晒方法','SPF','PA值','化学防晒'],hook:'你知道自己用了十年的防晒方式是错的吗？',emotion:'危机感',trigger:'每个人都在用防晒，"用错了"直接触发危机感，促使立即点击查看。',titleType:'误区揭露型',analysis:'误区型内容的核心价值在于让用户产生"原来我一直做错了"的顿悟感，这种感觉会驱动分享行为。',formula:'[误区陈述]+[危害说明]+[正确方法]+[具体产品推荐]+[总结CTA]',formulaEg:'防晒这件事你做错了多少年？这4个误区99%的人都中招。',cta:'存下来，转给还在用错防晒的朋友。',ctaGoal:'转发+收藏',interaction:'列出常见误区清单，引导用户在评论区自测，带动高互动率。',xtags:['防晒误区','防晒科普','SPF选择','敏感肌防晒'],nextSteps:[{done:true,text:'已提取全部素材进库',tag:'已完成'},{done:false,text:'误区系列内容尚未创作',tag:'去创作'}]},
-];
+const ITEMS = [];
+const BREAKDOWNS = [];
 
 const TYPE_META={inspire:{label:'灵感',cls:'tag-inspire'},hook:{label:'Hook',cls:'tag-hook'},title:{label:'标题',cls:'tag-title'},cta:{label:'CTA',cls:'tag-cta'},breakdown:{label:'拆解',cls:'tag-breakdown'},faq:{label:'高频问题',cls:'tag-faq'}};
 const STATUS_META={unused:{label:'未使用',cls:'u-un'},drafted:{label:'已入草稿',cls:'u-dr'},published:{label:'已发布',cls:'u-pb'}};

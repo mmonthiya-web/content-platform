@@ -296,7 +296,7 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
     <div class="tb-r">
       <div class="pending-pill" onclick="window.location.href='drafts.html'">
         <i class="ti ti-layout-kanban"></i>
-        <span id="pending-count">19 篇草稿待排期</span>
+        <span id="pending-count">0 篇草稿待排期</span>
       </div>
       <button class="tbtn p" onclick="openModal(null)"><i class="ti ti-plus"></i>新建排期</button>
       <div class="tb-av">王</div>
@@ -307,17 +307,17 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
     <!-- STAT BAR -->
     <div class="stat-bar">
       <div class="stat-card">
-        <div class="sc-n" id="st-published">8</div>
+        <div class="sc-n" id="st-published">0</div>
         <div class="sc-lbl">本月已发布</div>
         <div class="sc-sub">篇内容</div>
       </div>
       <div class="stat-card accent">
-        <div class="sc-n" id="st-scheduled">2</div>
+        <div class="sc-n" id="st-scheduled">0</div>
         <div class="sc-lbl">本月待发布</div>
         <div class="sc-sub">已排期</div>
       </div>
       <div class="stat-card">
-        <div class="sc-n" id="st-total">10</div>
+        <div class="sc-n" id="st-total">0</div>
         <div class="sc-lbl">本月总计</div>
         <div class="sc-sub">篇内容</div>
       </div>
@@ -424,33 +424,12 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
 
 <script>
 /* ═══ DATA ═══ */
-const DRAFTS = [
-  {id:1,title:'🧴 The Ordinary 果酸水保姆级使用指南',status:'draft',cats:['skincare'],platform:'xhs'},
-  {id:2,title:'越懒的人皮肤越好？反直觉护肤法',status:'draft',cats:['skincare'],platform:'xhs'},
-  {id:3,title:'🌞 防晒误区大盘点！你每天都做错的那件事',status:'scheduled',cats:['skincare'],platform:'xhs'},
-  {id:4,title:'新加坡超平价好物分享 🛒',status:'draft',cats:['lifestyle'],platform:'xhs'},
-  {id:5,title:'28天皮肤蜕变计划：油痘肌到哑光肌全过程',status:'published',cats:['skincare'],platform:'xhs'},
-  {id:6,title:'敏感肌选防晒指南：4个关键指标',status:'draft',cats:['skincare'],platform:'xhs'},
-  {id:7,title:'📱 我的桌面收纳好物清单',status:'draft',cats:['lifestyle'],platform:'xhs'},
-  {id:8,title:'新加坡周末去哪里？5个打卡地',status:'scheduled',cats:['travel'],platform:'xhs'},
-];
+const DRAFTS = [];
 
 const CAT_COLORS = {skincare:['#ECE8F5','#5340A0'],lifestyle:['#E6EEE0','#3E5432'],travel:['#E8EEF5','#2A5080'],food:['#F2E8D0','#7A5518']};
 
 // scheduled posts with real dates
-let POSTS = [
-  {id:101,draftId:3,title:'🌞 防晒误区大盘点！你每天都做错的那件事',date:'2026-6-5',time:'10:00',status:'today',platform:'xhs',cats:['skincare']},
-  {id:102,draftId:8,title:'新加坡周末去哪里？5个打卡地',date:'2026-6-7',time:'09:00',status:'scheduled',platform:'xhs',cats:['travel']},
-  {id:103,draftId:null,title:'打工人位改造前后对比｜全部好物清单上',date:'2026-6-8',time:'12:00',status:'scheduled',platform:'xhs',cats:['lifestyle']},
-  {id:104,draftId:null,title:'越懒的人皮肤越好？反直觉护肤法',date:'2026-6-10',time:'10:00',status:'scheduled',platform:'xhs',cats:['skincare']},
-  {id:105,draftId:null,title:'28天皮肤蜕变计划：油痘肌到哑光肌',date:'2026-6-14',time:'09:30',status:'scheduled',platform:'xhs',cats:['skincare']},
-  {id:106,draftId:null,title:'防晒误区大盘点',date:'2026-6-19',time:'11:00',status:'scheduled',platform:'xhs',cats:['skincare']},
-  {id:107,draftId:null,title:'租房第一天入住清洁指南',date:'2026-6-21',time:'10:00',status:'scheduled',platform:'xhs',cats:['lifestyle']},
-  {id:108,draftId:null,title:'敏感肌护理方案',date:'2026-6-26',time:'14:00',status:'scheduled',platform:'xhs',cats:['skincare']},
-  // published
-  {id:90,draftId:5,title:'28天皮肤蜕变计划（第一期）',date:'2026-6-1',time:'09:00',status:'published',platform:'xhs',cats:['skincare']},
-  {id:91,draftId:null,title:'新加坡好物 May 月回顾',date:'2026-5-28',time:'10:00',status:'published',platform:'xhs',cats:['lifestyle']},
-];
+let POSTS = [];
 
 const now = new Date();
 let calYear = now.getFullYear();

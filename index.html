@@ -299,6 +299,7 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
   <div class="sb-foot">
     <button class="sb-cta"><i class="ti ti-download"></i>导入分析结果</button>
     <button class="sb-ghost"><i class="ti ti-settings"></i>设置</button>
+    <button class="sb-ghost" onclick="window.location.href='guide.html'"><i class="ti ti-book"></i>使用说明</button>
   </div>
 </aside>
 
@@ -348,7 +349,7 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
         <div class="pipe-stage">
           <div class="pc warn">
             <div class="pc-nm">灵感库</div>
-            <div class="pc-n">34</div>
+            <div class="pc-n">0</div>
             <div class="pc-sub">条待转化</div>
             <div class="pc-pill pill-w">积压偏多</div>
           </div>
@@ -356,7 +357,7 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
         <div class="pipe-stage">
           <div class="pc warn">
             <div class="pc-nm">草稿</div>
-            <div class="pc-n">21</div>
+            <div class="pc-n">0</div>
             <div class="pc-sub">篇待处理</div>
             <div class="pc-pill pill-w">积压偏多</div>
           </div>
@@ -364,7 +365,7 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
         <div class="pipe-stage">
           <div class="pc low">
             <div class="pc-nm">本周排期</div>
-            <div class="pc-n">2</div>
+            <div class="pc-n">0</div>
             <div class="pc-sub">篇已安排</div>
             <div class="pc-pill pill-l">排期偏少</div>
           </div>
@@ -372,7 +373,7 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
         <div class="pipe-stage">
           <div class="pc">
             <div class="pc-nm">本月发布</div>
-            <div class="pc-n">8</div>
+            <div class="pc-n">0</div>
             <div class="pc-sub">篇已发出</div>
             <div class="pc-pill pill-g">正常</div>
           </div>
@@ -381,7 +382,7 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
       <div class="diag">
         <i class="ti ti-alert-triangle"></i>
         <div class="diag-text">
-          <strong>执行力瓶颈</strong> — 草稿积压 21 篇，但本周仅排期 2 篇。今日优先把已有草稿排出去，暂不建议创建新内容。
+          <strong>执行力瓶颈</strong> — 还没有内容数据。导入爆款分析结果后，系统会自动计算各阶段数量。
         </div>
       </div>
     </div>
@@ -409,73 +410,13 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
           </div>
 
           <div class="task-list" id="task-list">
-
-            <!-- MUST #1 — 排期任务 (from pipeline diagnosis) -->
-            <div class="task" data-type="must" onclick="toggleTask(this)">
-              <div class="chk"></div>
-              <div class="task-dot" style="background:#D4622D;"></div>
-              <div class="task-body">
-                <div class="task-name">
-                  安排 3 篇内容排期
-                  <span class="type-must">必须做</span>
-                </div>
-                <div class="task-meta">
-                  草稿库 <span class="hi">积压 21 篇</span>，本周仅排了 2 篇 — 由流水线诊断触发
-                </div>
-              </div>
-              <button class="task-dest" onclick="event.stopPropagation()">
-                <i class="ti ti-calendar-event"></i>去排期日历
-              </button>
+            <div style="padding:20px;text-align:center;color:var(--taupe);font-size:12px;line-height:1.8;">
+              还没有任务 — 导入分析结果或新建草稿后，<br>系统会自动生成今日待办
             </div>
-
-            <!-- MUST #2 — complete draft (missing CTA) -->
-            <div class="task" data-type="must" onclick="toggleTask(this)">
-              <div class="chk"></div>
-              <div class="task-dot" style="background:#D4622D;"></div>
-              <div class="task-body">
-                <div class="task-name">
-                  完成《28天改善皮肤状态》文案
-                  <span class="type-must">必须做</span>
-                </div>
-                <div class="task-meta">
-                  Hook ✓ · 标题 ✓ · <span class="hi">CTA 缺失</span> — 补齐后即可排期发布
-                </div>
-              </div>
-              <button class="task-dest" onclick="event.stopPropagation()">
-                <i class="ti ti-writing"></i>去草稿库
-              </button>
-            </div>
-
-            <!-- SUGGEST #1 — CTA stock low -->
-            <div class="task sugg" data-type="sugg" onclick="toggleTask(this)">
-              <div class="chk"></div>
-              <div class="task-dot" style="background:var(--khaki);"></div>
-              <div class="task-body">
-                <div class="task-name">
-                  补充 5 条 CTA 素材
-                  <span class="type-sugg">建议做</span>
-                </div>
-                <div class="task-meta">
-                  CTA 库仅 <span class="hi">18 条</span>，低于建议阈值 25 条 — 非紧急，可稍后处理
-                </div>
-              </div>
-              <button class="task-dest" onclick="event.stopPropagation()">
-                <i class="ti ti-sparkles"></i>AI 生成
-              </button>
-            </div>
-
-            <!-- DONE -->
-            <div class="task done" data-type="must" onclick="toggleTask(this)">
-              <div class="chk done"></div>
-              <div class="task-dot" style="background:var(--sage);"></div>
-              <div class="task-body">
-                <div class="task-name">导入夏季护肤爆款拆解</div>
-                <div class="task-meta">已完成 · 2小时前</div>
-              </div>
-            </div>
-
           </div>
         </div>
+      </div>
+      <!-- PRIORITY
 
         <!-- PRIORITY CONTENT — driven by diagnosis: complete near-done drafts -->
         <div>
@@ -487,58 +428,12 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
             <a class="sh-link" onclick="window.location.href='drafts.html'" style="cursor:pointer;">草稿库 <i class="ti ti-arrow-right" style="font-size:11px"></i></a>
           </div>
           <div class="prio-list">
-
-            <div class="pcard">
-              <div class="pcard-top">
-                <span class="pcard-badge pb-hot">完成度最高</span>
-                <span class="pcard-time">预计 5 分钟</span>
-              </div>
-              <!-- source trail -->
-              <div class="pcard-trail">
-                <span class="trail-node"><span class="trail-tag tr-expl">爆款拆解 #07</span></span>
-                <span class="trail-sep">→</span>
-                <span class="trail-node"><span class="trail-tag tr-faq">高频问题 ×8</span></span>
-                <span class="trail-sep">→</span>
-                <span class="trail-node"><span class="trail-tag tr-hook">Hook 已匹配</span></span>
-              </div>
-              <div class="pcard-title">越懒的人越会变美？反直觉护肤法</div>
-              <div class="pcard-checks">
-                <span class="pck ok"><i class="ti ti-check"></i>Hook</span>
-                <span class="pck ok"><i class="ti ti-check"></i>标题</span>
-                <span class="pck miss"><i class="ti ti-x"></i>CTA 缺失</span>
-              </div>
-              <div class="pcard-foot">
-                <span class="pcard-est"><i class="ti ti-clock"></i>补 CTA 即可排期</span>
-                <span class="pcard-cta">立即补全 <i class="ti ti-arrow-right"></i></span>
-              </div>
+            <div style="padding:20px;text-align:center;color:var(--taupe);font-size:12px;line-height:1.8;">
+              还没有草稿 — 去<a href="postcraft.html" style="color:var(--caramel);">创作页</a>生成第一篇文案
             </div>
-
-            <div class="pcard">
-              <div class="pcard-top">
-                <span class="pcard-badge pb-new">近期新增</span>
-                <span class="pcard-time">预计 15 分钟</span>
-              </div>
-              <div class="pcard-trail">
-                <span class="trail-node"><span class="trail-tag tr-expl">爆款拆解 #07</span></span>
-                <span class="trail-sep">→</span>
-                <span class="trail-node"><span class="trail-tag tr-faq">高频问题 ×5</span></span>
-              </div>
-              <div class="pcard-title">防晒误区大盘点｜你每天都做错的那件事</div>
-              <div class="pcard-checks">
-                <span class="pck ok"><i class="ti ti-check"></i>Hook</span>
-                <span class="pck miss"><i class="ti ti-x"></i>标题待选</span>
-                <span class="pck miss"><i class="ti ti-x"></i>CTA 缺失</span>
-              </div>
-              <div class="pcard-foot">
-                <span class="pcard-est"><i class="ti ti-clock"></i>来自爆款拆解 #07</span>
-                <span class="pcard-cta">AI 补全 <i class="ti ti-sparkles" style="font-size:12px"></i></span>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
-
       <!-- RIGHT -->
       <div class="right-p">
 
@@ -584,40 +479,18 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
           </div>
           <!-- context note -->
           <div style="font-size:11px;color:var(--taupe);padding:7px 10px;background:var(--linen);border-radius:var(--r-md);margin-bottom:8px;line-height:1.6;">
-            当前草稿积压，推荐先消化草稿。以下选题可以备用，等草稿库清空后再创作。
+            设置 Brand Context 并导入爆款拆解后，AI 会根据你的内容库推荐选题。
           </div>
           <div class="ai-list">
-            <div class="ai-item">
-              <div class="ai-num">1</div>
-              <div class="ai-body">
-                <div class="ai-title">防晒误区：你以为在防晒，其实没有</div>
-                <div class="ai-why">
-                  <span><span class="ai-src as-expl">爆款拆解 #07</span> · 近期热点</span>
-                </div>
-              </div>
-            </div>
-            <div class="ai-item">
-              <div class="ai-num">2</div>
-              <div class="ai-body">
-                <div class="ai-title">敏感肌护理：3 步简化护肤流程</div>
-                <div class="ai-why">
-                  <span><span class="ai-src as-faq">高频问题 ×8</span> · 评论区高频</span>
-                </div>
-              </div>
-            </div>
-            <div class="ai-item">
-              <div class="ai-num">3</div>
-              <div class="ai-body">
-                <div class="ai-title">医美恢复期注意事项清单</div>
-                <div class="ai-why">
-                  <span><span class="ai-src as-faq">内容库空白区</span> · 建议补充</span>
-                </div>
-              </div>
+            <div style="padding:16px;text-align:center;color:var(--taupe);font-size:12px;line-height:1.8;">
+              导入爆款拆解后，<br>AI 会自动生成推荐选题
             </div>
           </div>
         </div>
-
       </div>
+    </div>
+  </div>
+</div>
     </div>
   </div>
 </div>
@@ -657,16 +530,7 @@ function filterTasks(type, btn) {
 }
 
 /* calendar */
-const posts = [
-  {d:'2026-6-5',  t:'夏日防晒清单', s:'pending'},
-  {d:'2026-6-7',  t:'租房第一天清洁', s:'sched'},
-  {d:'2026-6-8',  t:'打工人改造前后', s:'sched'},
-  {d:'2026-6-10', t:'越懒的人越会变美', s:'sched'},
-  {d:'2026-6-14', t:'28天皮肤蜕变', s:'sched'},
-  {d:'2026-6-19', t:'防晒误区大盘点', s:'sched'},
-  {d:'2026-6-21', t:'租房清洁指南', s:'sched'},
-  {d:'2026-6-26', t:'敏感肌护理方案', s:'sched'},
-];
+const posts = []; // 排期数据将从草稿库同步
 let cy = now.getFullYear(), cm = now.getMonth();
 function renderCal() {
   document.getElementById('cal-ttl').textContent = `${cy}年${cm+1}月`;

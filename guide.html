@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>使用说明 · 内容平台</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --oyster: #F1ECE1;
+  --pure: #F8F5F0;
+  --linen: #EDE8DF;
+  --khaki: #C3B091;
+  --taupe: #9A8C7E;
+  --mocha: #5C4A3A;
+  --ink: #2E1F14;
+  --caramel: #864C24;
+  --autumn: #643C20;
+  --caramel-l: #E8D5C0;
+  --caramel-ll: #F5EDE3;
+  --sage: #5A7048;
+  --sage-bg: #E6EEE0;
+  --white: #FFFFFF;
+  --border: rgba(163,140,115,.2);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--oyster);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* ── NAV ── */
+nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.nav-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 17px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.nav-logo em { font-style: italic; color: var(--caramel); }
+.nav-links { display: flex; gap: 8px; }
+.nav-link {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mocha);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all .12s;
+}
+.nav-link:hover { background: var(--linen); }
+.nav-link.primary { background: var(--caramel); color: var(--oyster); border-color: var(--caramel); }
+.nav-link.primary:hover { background: var(--autumn); }
+
+/* ── LAYOUT ── */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+/* ── HERO ── */
+.hero {
+  text-align: center;
+  margin-bottom: 56px;
+}
+.hero-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--caramel);
+  margin-bottom: 14px;
+}
+.hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 36px;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 14px;
+}
+.hero h1 em { font-style: italic; color: var(--caramel); }
+.hero p {
+  font-size: 15px;
+  color: var(--taupe);
+  line-height: 1.7;
+  max-width: 540px;
+  margin: 0 auto 24px;
+}
+.hero-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.hero-btn {
+  height: 42px;
+  padding: 0 22px;
+  border-radius: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all .13s;
+}
+.hero-btn.p { background: var(--caramel); color: var(--oyster); }
+.hero-btn.p:hover { background: var(--autumn); }
+.hero-btn.g { background: var(--white); color: var(--mocha); border: 1px solid var(--border); }
+.hero-btn.g:hover { background: var(--linen); }
+
+/* ── SECTIONS ── */
+.section { margin-bottom: 52px; }
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--caramel);
+  margin-bottom: 6px;
+}
+.section h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.section > p {
+  font-size: 13.5px;
+  color: var(--taupe);
+  line-height: 1.75;
+  margin-bottom: 20px;
+}
+
+/* ── DIVIDER ── */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 48px 0;
+}
+
+/* ── STEPS ── */
+.steps { display: flex; flex-direction: column; gap: 14px; }
+.step-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px 18px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--caramel);
+  color: var(--oyster);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-body h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+.step-body p {
+  font-size: 12.5px;
+  color: var(--taupe);
+  line-height: 1.7;
+}
+.step-body a { color: var(--caramel); text-decoration: none; }
+.step-body a:hover { color: var(--autumn); text-decoration: underline; }
+
+/* ── FEATURE CARDS ── */
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.fcard {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+.fcard-icon {
+  font-size: 24px;
+  margin-bottom: 10px;
+  display: block;
+}
+.fcard h3 {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.fcard p {
+  font-size: 12px;
+  color: var(--taupe);
+  line-height: 1.65;
+}
+.fcard a {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--caramel);
+  text-decoration: none;
+}
+.fcard a:hover { color: var(--autumn); }
+
+/* ── TIP BOXES ── */
+.tip {
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin: 12px 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.tip.info { background: var(--caramel-ll); border-left: 3px solid var(--caramel); color: var(--mocha); }
+.tip.warn { background: #FFF8EC; border-left: 3px solid #C89020; color: #7A5010; }
+.tip.good { background: var(--sage-bg); border-left: 3px solid var(--sage); color: #3E5432; }
+.tip strong { font-weight: 600; }
+
+/* ── FAQ ── */
+.faq { display: flex; flex-direction: column; gap: 10px; }
+.faq-item {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.faq-q {
+  padding: 14px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+.faq-q:hover { background: var(--linen); }
+.faq-q::after { content: '＋'; font-size: 16px; color: var(--taupe); }
+.faq-item.open .faq-q::after { content: '－'; }
+.faq-a {
+  display: none;
+  padding: 0 16px 14px;
+  font-size: 12.5px;
+  color: var(--taupe);
+  line-height: 1.75;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.faq-item.open .faq-a { display: block; }
+
+/* ── TABLE ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+th {
+  background: var(--pure);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--mocha);
+  vertical-align: top;
+  line-height: 1.6;
+}
+tr:last-child td { border-bottom: none; }
+td:first-child { font-weight: 500; color: var(--ink); white-space: nowrap; }
+td code {
+  font-family: monospace;
+  font-size: 11.5px;
+  background: var(--linen);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--caramel);
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width: 600px) {
+  .feature-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 28px; }
+  nav { padding: 0 16px; }
+  .container { padding: 32px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><em>内容</em>平台</a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">← 返回首页</a>
+    <a class="nav-link primary" href="postcraft.html">开始使用</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">使用说明</div>
+    <h1>欢迎使用<em>内容平台</em></h1>
+    <p>
+      小红书内容运营工作台，帮你把爆款分析、文案创作、内容排期整合在一个地方。
+      这份说明会告诉你怎么从零开始用起来。
+    </p>
+    <div class="hero-btns">
+      <a class="hero-btn p" href="postcraft.html">🚀 立即开始创作</a>
+      <a class="hero-btn g" href="index.html">查看首页</a>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- QUICK START -->
+  <div class="section">
+    <div class="section-label">快速上手</div>
+    <h2>三步开始使用</h2>
+    <p>第一次使用，按这个顺序来，10 分钟内可以生成第一篇文案。</p>
+
+    <div class="steps">
+
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>设置 Brand Context</h3>
+          <p>
+            进入<a href="postcraft.html">创作页</a>，填写你的账号定位、受众信息、语气偏好。
+            这是告诉 AI「你是谁」的步骤，只需要做一次，之后每次生成文案都会基于这份设定。
+            填完四步后点「生成 Brand Context」，AI 会自动整理成一份说明。
+          </p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>生成第一篇文案</h3>
+          <p>
+            Brand Context 设置好后，在创作页输入主题（比如「果酸水使用教程」），
+            选择语气风格，点击「生成文案」。AI 会输出标题、正文、标签和写作思路。
+            可以切换不同语气版本对比，找到最合适的。
+          </p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>保存草稿并安排排期</h3>
+          <p>
+            满意的文案点「保存到草稿库」，进入<a href="drafts.html">草稿库</a>可以继续编辑、上传封面图、添加标签。
+            编辑好之后在<a href="calendar.html">排期日历</a>选择发布日期和时间，安排好发布计划。
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="tip info" style="margin-top:16px;">
+      <strong>需要 API Key：</strong>创作页的 AI 功能（Brand Context 生成和文案生成）需要 Anthropic API Key。
+      申请地址：<a href="https://console.anthropic.com" target="_blank" style="color:var(--caramel);">console.anthropic.com</a>。
+      其他功能（素材库、草稿库、排期日历）不需要 API 也可以正常使用。
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- FEATURES -->
+  <div class="section">
+    <div class="section-label">功能介绍</div>
+    <h2>五个核心模块</h2>
+    <p>每个模块对应内容创作流程的一个阶段，从找选题到发布全程覆盖。</p>
+
+    <div class="feature-grid">
+
+      <div class="fcard">
+        <span class="fcard-icon">🏠</span>
+        <h3>首页 · 今日工作台</h3>
+        <p>
+          查看内容流水线状态（灵感库 → 草稿 → 排期 → 发布），
+          系统根据当前数据自动生成今日待办，告诉你今天该做什么。
+        </p>
+        <a href="index.html">→ 进入首页</a>
+      </div>
+
+      <div class="fcard">
+        <span class="fcard-icon">📚</span>
+        <h3>素材库 · 内容管理</h3>
+        <p>
+          存放从爆款分析中提取的灵感、Hook、标题、CTA、高频问题。
+          点击「导入分析结果」将 Claude 的分析内容存入库中。
+          支持按类型筛选、搜索、查看来源追溯。
+        </p>
+        <a href="suzaiku.html">→ 进入素材库</a>
+      </div>
+
+      <div class="fcard">
+        <span class="fcard-icon">✍️</span>
+        <h3>创作 · AI 文案生成</h3>
+        <p>
+          设置 Brand Context 后，输入主题即可生成符合小红书风格的完整文案。
+          支持多种语气版本对比，可引用素材库中的 Hook 和标题。
+        </p>
+        <a href="postcraft.html">→ 进入创作页</a>
+      </div>
+
+      <div class="fcard">
+        <span class="fcard-icon">📝</span>
+        <h3>草稿库 · 内容管理</h3>
+        <p>
+          管理所有未发布的内容。支持编辑标题、正文、标签、分类，
+          上传封面图片，查看完成度检查（标题/正文/标签/排期是否齐全）。
+        </p>
+        <a href="drafts.html">→ 进入草稿库</a>
+      </div>
+
+      <div class="fcard" style="grid-column: 1 / -1;">
+        <span class="fcard-icon">📅</span>
+        <h3>排期日历 · 发布计划</h3>
+        <p>
+          月历和周历两种视图，查看和管理发布计划。
+          可以把草稿库中的内容拖入日历安排发布时间，
+          支持改期、取消排期操作。
+        </p>
+        <a href="calendar.html">→ 进入排期日历</a>
+      </div>
+
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- HOW TO USE SUZAIKU -->
+  <div class="section">
+    <div class="section-label">使用技巧</div>
+    <h2>如何使用素材库</h2>
+    <p>素材库是整个工作流的起点，内容越丰富，AI 生成的文案质量越高。</p>
+
+    <div class="steps">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>找到小红书爆款帖子</h3>
+          <p>在小红书上找到同领域点赞收藏高的帖子，复制帖子内容和链接。</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>用 Claude 分析爆款结构</h3>
+          <p>
+            打开 <a href="https://claude.ai" target="_blank">claude.ai</a>，
+            把帖子内容发给 Claude，要求它分析：标题套路、Hook 类型、情绪触发、文案公式、CTA 策略。
+            让 Claude 以 JSON 格式输出结果，方便导入。
+          </p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>导入到素材库</h3>
+          <p>
+            在素材库页面点击「导入分析结果」，粘贴 Claude 返回的内容。
+            系统会自动提取 Hook、标题、CTA 等素材分类存入对应模块。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip good" style="margin-top:16px;">
+      <strong>建议：</strong>先积累 3-5 篇爆款拆解，再开始用 AI 生成文案。素材越多，生成的内容越贴合你的领域和风格。
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- PAGE OVERVIEW TABLE -->
+  <div class="section">
+    <div class="section-label">页面一览</div>
+    <h2>所有页面和功能</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>页面</th>
+          <th>主要功能</th>
+          <th>需要 API</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a href="index.html" style="color:var(--caramel);">首页</a></td>
+          <td>今日任务、内容流水线、AI 推荐选题、排期日历预览</td>
+          <td>否</td>
+        </tr>
+        <tr>
+          <td><a href="suzaiku.html" style="color:var(--caramel);">素材库</a></td>
+          <td>灵感 / Hook / 标题 / CTA / 高频问题管理，爆款拆解详情</td>
+          <td>否</td>
+        </tr>
+        <tr>
+          <td><a href="postcraft.html" style="color:var(--caramel);">创作页</a></td>
+          <td>Brand Context 设置（填写）、AI 文案生成、语气版本切换</td>
+          <td><strong>生成功能需要</strong></td>
+        </tr>
+        <tr>
+          <td><a href="drafts.html" style="color:var(--caramel);">草稿库</a></td>
+          <td>草稿编辑、封面上传、完成度检查、定时发布设置</td>
+          <td>否</td>
+        </tr>
+        <tr>
+          <td><a href="calendar.html" style="color:var(--caramel);">排期日历</a></td>
+          <td>月历 / 周历视图、新建排期、改期、取消排期</td>
+          <td>否</td>
+        </tr>
+        <tr>
+          <td><a href="guide.html" style="color:var(--caramel);">使用说明</a></td>
+          <td>快速上手、功能介绍、常见问题</td>
+          <td>否</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- FAQ -->
+  <div class="section">
+    <div class="section-label">常见问题</div>
+    <h2>FAQ</h2>
+
+    <div class="faq">
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">怎么获取 Anthropic API Key？</div>
+        <div class="faq-a">
+          访问 <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>，
+          注册账号后进入 API Keys 页面创建新的 Key。
+          Key 格式为 <code>sk-ant-...</code>，复制后在创作页的 Brand Context 设置里使用。
+          注意：API Key 只会保存在你自己的浏览器里，不会上传到任何服务器。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">数据存在哪里？刷新页面会不会丢失？</div>
+        <div class="faq-a">
+          所有数据（Brand Context、自定义语气标签、生成历史）存在浏览器的 localStorage 里。
+          刷新页面不会丢失，但清除浏览器数据或换浏览器会丢失。
+          草稿、素材、排期数据目前是演示数据，后续会接入真实的数据持久化方案。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Brand Context 是什么？为什么要填？</div>
+        <div class="faq-a">
+          Brand Context 是告诉 AI「你是谁」的一份说明，包括你的账号定位、目标受众、语气风格、禁用词等。
+          每次生成文案时，AI 都会参考这份说明，确保生成的内容符合你的风格，而不是通用模板。
+          填得越详细，生成质量越高。只需要填写一次，之后会自动沿用。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">如何修改这份使用说明的内容？</div>
+        <div class="faq-a">
+          直接在 GitHub 上编辑 <code>guide.html</code> 文件。
+          所有文字内容都写在 HTML 标签之间，不需要懂代码，找到对应的文字直接修改就好。
+          保存后 GitHub Pages 会在 1-2 分钟内自动更新。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">可以添加新的使用说明章节吗？</div>
+        <div class="faq-a">
+          可以。在 <code>guide.html</code> 里复制一个 <code>&lt;div class="section"&gt;...&lt;/div&gt;</code> 块，
+          修改里面的标题和内容即可。也可以用现有的组件：
+          <code>step-item</code>（步骤）、<code>fcard</code>（功能卡片）、
+          <code>tip info/warn/good</code>（提示框）、<code>faq-item</code>（折叠问答）。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">手机上能用吗？</div>
+        <div class="faq-a">
+          目前各页面在手机上可以访问，但布局针对桌面端优化，部分功能在手机上体验较差。
+          手机端适配正在开发中，后续会推出移动端优化版本。
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- FOOTER -->
+  <div style="text-align:center;padding:20px 0;">
+    <p style="font-size:12px;color:var(--taupe);line-height:1.8;">
+      内容平台 · 小红书运营工作台<br>
+      有问题或建议？直接编辑 GitHub 仓库中的文件
+    </p>
+    <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;">
+      <a href="index.html" style="font-size:12px;color:var(--caramel);text-decoration:none;font-weight:500;">首页</a>
+      <span style="color:var(--khaki);">·</span>
+      <a href="suzaiku.html" style="font-size:12px;color:var(--caramel);text-decoration:none;font-weight:500;">素材库</a>
+      <span style="color:var(--khaki);">·</span>
+      <a href="postcraft.html" style="font-size:12px;color:var(--caramel);text-decoration:none;font-weight:500;">创作</a>
+      <span style="color:var(--khaki);">·</span>
+      <a href="drafts.html" style="font-size:12px;color:var(--caramel);text-decoration:none;font-weight:500;">草稿库</a>
+      <span style="color:var(--khaki);">·</span>
+      <a href="calendar.html" style="font-size:12px;color:var(--caramel);text-decoration:none;font-weight:500;">排期日历</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleFaq(el) {
+  el.closest('.faq-item').classList.toggle('open');
+}
+</script>
+</body>
+</html>
