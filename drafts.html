@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>草稿库</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{
+  --oyster:#F1ECE1;--pure:#F8F5F0;--linen:#EDE8DF;
+  --khaki:#C3B091;--taupe:#9A8C7E;--mocha:#5C4A3A;--ink:#2E1F14;
+  --caramel:#864C24;--autumn:#643C20;--caramel-l:#E8D5C0;--caramel-ll:#F5EDE3;
+  --sage:#5A7048;--sage-bg:#E6EEE0;--sage-dk:#3E5432;
+  --amber:#7A5518;--amber-bg:#F2E8D0;
+  --red:#C84040;--red-bg:#FCE8E8;
+  --white:#FFFFFF;
+  --border:rgba(163,140,115,.2);--border2:rgba(163,140,115,.11);
+  --r-sm:4px;--r-md:10px;--r-lg:14px;--r-xl:18px;
+  --sb:200px;--top:52px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;}
+body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);height:100vh;overflow:hidden;display:flex;}
+
+/* ══ SIDEBAR ══ */
+.sb{width:var(--sb);flex-shrink:0;background:var(--pure);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;}
+.sb-brand{padding:18px 16px 14px;border-bottom:1px solid var(--border);}
+.sb-logo{font-family:'DM Serif Display',serif;font-size:16px;color:var(--ink);cursor:pointer;}
+.sb-logo em{font-style:italic;color:var(--caramel);}
+.sb-tag{font-size:10px;color:var(--taupe);margin-top:1px;}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 0;}
+.sb-nav::-webkit-scrollbar{width:0;}
+.sbg{margin-bottom:2px;}
+.sbg-lbl{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--khaki);padding:10px 16px 4px;display:flex;align-items:center;gap:6px;}
+.sbg-lbl::after{content:'';flex:1;height:1px;background:var(--border2);}
+.ni{display:flex;align-items:center;gap:9px;padding:7px 14px 7px 16px;font-size:12px;color:var(--taupe);cursor:pointer;border-left:2px solid transparent;transition:all .12s;}
+.ni:hover{color:var(--mocha);background:var(--linen);}
+.ni.on{color:var(--caramel);background:var(--caramel-ll);border-left-color:var(--caramel);font-weight:600;}
+.ni i{font-size:15px;flex-shrink:0;}
+.nb{margin-left:auto;font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:var(--linen);color:var(--taupe);}
+.ni.on .nb{background:var(--caramel-l);color:var(--autumn);}
+.sb-foot{padding:10px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:5px;}
+.sb-cta{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r-md);background:var(--caramel);color:var(--oyster);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:background .12s;}
+.sb-cta:hover{background:var(--autumn);}
+.sb-cta i{font-size:14px;}
+.sb-ghost{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:var(--r-md);background:transparent;color:var(--taupe);font-family:'Poppins',sans-serif;font-size:11.5px;cursor:pointer;border:1px solid var(--border);transition:all .12s;}
+.sb-ghost:hover{color:var(--mocha);background:var(--linen);}
+.sb-ghost i{font-size:14px;}
+
+/* ══ MAIN ══ */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.topbar{height:var(--top);flex-shrink:0;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:10px;}
+.crumb{display:flex;align-items:center;gap:6px;font-size:13px;}
+.crumb .r{color:var(--taupe);cursor:pointer;transition:color .12s;}
+.crumb .r:hover{color:var(--caramel);}
+.crumb .sep{color:var(--khaki);font-size:11px;}
+.crumb .cur{font-weight:600;color:var(--ink);}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.tbtn{height:32px;padding:0 13px;border-radius:var(--r-md);border:none;font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .12s;}
+.tbtn.g{background:var(--oyster);color:var(--mocha);border:1px solid var(--border);}
+.tbtn.g:hover{background:var(--linen);}
+.tbtn.p{background:var(--caramel);color:var(--oyster);}
+.tbtn.p:hover{background:var(--autumn);}
+.tbtn i{font-size:14px;}
+.tb-av{width:30px;height:30px;border-radius:50%;background:var(--caramel-l);color:var(--autumn);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1.5px solid var(--border);}
+
+/* ══ CONTENT ══ */
+.content{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* STAT BAR */
+.stat-bar{background:var(--white);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;gap:10px;flex-shrink:0;}
+.stat-card{flex:1;padding:12px 16px;border-radius:var(--r-lg);border:1px solid var(--border);display:flex;flex-direction:column;gap:3px;cursor:pointer;transition:all .13s;}
+.stat-card:hover{background:var(--linen);}
+.stat-card.accent{background:var(--ink);border-color:var(--ink);}
+.stat-card.accent .sc-n{color:var(--oyster);}
+.stat-card.accent .sc-lbl{color:rgba(241,236,225,.5);}
+.sc-n{font-size:24px;font-weight:700;color:var(--ink);line-height:1;}
+.sc-lbl{font-size:11px;color:var(--taupe);margin-top:2px;}
+.sc-sub{font-size:10px;color:var(--khaki);}
+
+/* FILTER BAR */
+.filter-bar{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:0;flex-shrink:0;}
+.ftabs{display:flex;gap:0;}
+.ftab{height:40px;padding:0 13px;font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;color:var(--taupe);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;transition:all .12s;white-space:nowrap;}
+.ftab:hover{color:var(--mocha);}
+.ftab.on{color:var(--caramel);border-bottom-color:var(--caramel);font-weight:600;}
+.fdiv{width:1px;height:18px;background:var(--border);margin:0 8px;flex-shrink:0;align-self:center;}
+/* category chips */
+.cat-chips{display:flex;gap:5px;overflow-x:auto;padding:7px 0;}
+.cat-chips::-webkit-scrollbar{height:0;}
+.cchip{height:26px;padding:0 11px;border-radius:20px;font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .12s;white-space:nowrap;border:1px solid transparent;}
+.cchip:hover{opacity:.85;}
+.cchip.off{background:transparent;color:var(--taupe);border-color:var(--border);}
+.cchip.off:hover{background:var(--linen);color:var(--mocha);}
+.bar-r{margin-left:auto;display:flex;align-items:center;gap:7px;padding-left:10px;flex-shrink:0;}
+.sbox{position:relative;}
+.sbox i{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--taupe);}
+.sinp{height:30px;width:180px;padding:0 10px 0 30px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--oyster);font-family:'Poppins',sans-serif;font-size:12px;color:var(--ink);outline:none;transition:all .12s;}
+.sinp:focus{border-color:var(--caramel);background:var(--white);}
+.sinp::placeholder{color:var(--khaki);}
+
+/* ══ BODY GRID ══ */
+.body-grid{flex:1;display:grid;grid-template-columns:1fr 340px;overflow:hidden;}
+
+/* CARD GRID */
+.card-area{overflow-y:auto;padding:16px 12px 28px 20px;}
+.card-area::-webkit-scrollbar{width:4px;}
+.card-area::-webkit-scrollbar-thumb{background:var(--khaki);border-radius:999px;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;}
+
+/* DRAFT CARD */
+.dcard{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all .14s;position:relative;display:flex;flex-direction:column;}
+.dcard:hover{border-color:var(--caramel-l);box-shadow:0 3px 14px rgba(134,76,36,.08);transform:translateY(-1px);}
+.dcard.sel{border-color:var(--caramel);box-shadow:0 0 0 2px var(--caramel-ll);}
+/* image area */
+.dc-img{width:100%;height:120px;background:var(--linen);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;flex-shrink:0;}
+.dc-img img{width:100%;height:100%;object-fit:cover;}
+.dc-img-placeholder{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--khaki);}
+.dc-img-placeholder i{font-size:22px;}
+.dc-img-placeholder span{font-size:10px;}
+/* status badge on image */
+.dc-status{position:absolute;top:7px;left:7px;font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:20px;}
+.ds-draft{background:var(--linen);color:var(--mocha);}
+.ds-scheduled{background:var(--sage-bg);color:var(--sage-dk);}
+.ds-published{background:var(--caramel-ll);color:var(--caramel);}
+/* category tags on image */
+.dc-cats{position:absolute;bottom:7px;left:7px;display:flex;gap:3px;flex-wrap:wrap;}
+.dc-cat{font-size:9px;font-weight:700;padding:2px 6px;border-radius:20px;}
+/* card body */
+.dc-body{padding:10px 11px 9px;flex:1;display:flex;flex-direction:column;gap:4px;}
+.dc-title{font-size:12px;font-weight:500;color:var(--ink);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.dc-meta{display:flex;align-items:center;justify-content:space-between;margin-top:2px;}
+.dc-platform{font-size:10px;color:var(--taupe);display:flex;align-items:center;gap:3px;}
+.dc-platform i{font-size:11px;}
+.dc-date{font-size:10px;color:var(--taupe);}
+/* scheduled date highlight */
+.dc-sched{font-size:10.5px;font-weight:600;color:var(--sage);display:flex;align-items:center;gap:3px;margin-top:3px;}
+.dc-sched i{font-size:12px;}
+/* action overlay on hover */
+.dc-overlay{position:absolute;inset:0;background:rgba(46,31,20,.45);display:none;align-items:center;justify-content:center;gap:8px;border-radius:var(--r-lg);}
+.dcard:hover .dc-overlay{display:flex;}
+.dco-btn{width:34px;height:34px;border-radius:50%;background:rgba(248,245,240,.9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink);transition:all .12s;}
+.dco-btn:hover{background:var(--white);transform:scale(1.08);}
+.dco-btn i{font-size:16px;}
+/* new draft card */
+.dcard-new{background:transparent;border:1.5px dashed var(--border);cursor:pointer;transition:all .13s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:180px;border-radius:var(--r-lg);}
+.dcard-new:hover{border-color:var(--caramel);background:var(--caramel-ll);}
+.dcard-new i{font-size:24px;color:var(--khaki);}
+.dcard-new span{font-size:12px;color:var(--taupe);}
+.dcard-new:hover i,.dcard-new:hover span{color:var(--caramel);}
+
+/* ══ EDIT PANEL ══ */
+.edit-panel{background:var(--white);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+/* empty state */
+.ep-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--taupe);padding:24px;text-align:center;}
+.ep-empty i{font-size:30px;opacity:.3;}
+.ep-empty p{font-size:12px;line-height:1.6;max-width:160px;}
+/* edit content */
+.ep-head{padding:13px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.ep-title{font-size:12.5px;font-weight:600;color:var(--ink);}
+.ep-close{width:24px;height:24px;border-radius:var(--r-sm);border:none;background:var(--linen);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--taupe);}
+.ep-close:hover{background:var(--border);color:var(--ink);}
+.ep-close i{font-size:14px;}
+.ep-body{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
+.ep-body::-webkit-scrollbar{width:0;}
+/* image upload */
+.img-upload{width:100%;height:130px;border:1.5px dashed var(--border);border-radius:var(--r-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .13s;background:var(--oyster);position:relative;overflow:hidden;}
+.img-upload:hover{border-color:var(--caramel);background:var(--caramel-ll);}
+.img-upload.has-img{border-style:solid;}
+.img-upload img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.img-upload-overlay{position:absolute;inset:0;background:rgba(46,31,20,.4);display:none;align-items:center;justify-content:center;color:white;font-size:12px;gap:6px;}
+.img-upload.has-img:hover .img-upload-overlay{display:flex;}
+.img-icon{font-size:24px;color:var(--khaki);}
+.img-lbl{font-size:11.5px;color:var(--taupe);}
+.img-sub{font-size:10px;color:var(--khaki);}
+/* field */
+.ef-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--taupe);margin-bottom:5px;}
+.ef-inp{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--oyster);font-family:'Poppins',sans-serif;font-size:12.5px;color:var(--ink);outline:none;transition:all .12s;resize:none;}
+.ef-inp:focus{border-color:var(--caramel);background:var(--white);}
+.ef-inp::placeholder{color:var(--khaki);}
+textarea.ef-inp{line-height:1.7;}
+/* char bars */
+.char-bars{display:flex;flex-direction:column;gap:4px;margin-top:5px;}
+.cbar-row{display:flex;align-items:center;gap:7px;}
+.cbar-lbl{font-size:10px;font-weight:600;color:var(--taupe);min-width:52px;letter-spacing:.04em;text-transform:uppercase;}
+.cbar-track{flex:1;height:3px;background:var(--linen);border-radius:2px;overflow:hidden;}
+.cbar-fill{height:100%;border-radius:2px;transition:width .2s;}
+.cb-xhs{background:var(--sage);}
+.cb-xhs.warn{background:var(--amber);}
+.cb-xhs.over{background:var(--red);}
+.cbar-count{font-size:10px;color:var(--taupe);min-width:52px;text-align:right;}
+.cbar-count.warn{color:var(--amber);}
+.cbar-count.over{color:var(--red);}
+/* tags input */
+.tags-wrap{display:flex;flex-wrap:wrap;gap:5px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--oyster);cursor:text;min-height:36px;transition:border-color .12s;}
+.tags-wrap:focus-within{border-color:var(--caramel);background:var(--white);}
+.htag{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--caramel-ll);color:var(--caramel);display:flex;align-items:center;gap:4px;}
+.htag i{font-size:11px;cursor:pointer;color:var(--caramel-l);}
+.htag i:hover{color:var(--caramel);}
+.tag-inp{border:none;background:transparent;font-family:'Poppins',sans-serif;font-size:12px;color:var(--ink);outline:none;min-width:80px;flex:1;}
+.tag-inp::placeholder{color:var(--khaki);}
+/* category selector */
+.cat-sel{display:flex;flex-wrap:wrap;gap:6px;}
+.cat-btn{height:28px;padding:0 13px;border-radius:20px;border:1px solid var(--border);background:transparent;font-family:'Poppins',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .12s;}
+.cat-btn:hover{opacity:.8;}
+/* platform selector */
+.plat-sel{display:flex;gap:8px;}
+.plat-btn{flex:1;height:36px;border-radius:var(--r-md);border:1.5px solid var(--border);background:transparent;font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;color:var(--mocha);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .12s;}
+.plat-btn:hover{border-color:var(--khaki);background:var(--linen);}
+.plat-btn.on{border-color:var(--caramel);background:var(--caramel-ll);color:var(--caramel);}
+.plat-btn i{font-size:14px;}
+/* schedule */
+.sched-row{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;}
+.sched-date{padding:7px 10px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--oyster);font-family:'Poppins',sans-serif;font-size:12px;color:var(--ink);outline:none;width:100%;}
+.sched-date:focus{border-color:var(--caramel);}
+.sched-sel{padding:7px 8px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--oyster);font-family:'Poppins',sans-serif;font-size:12px;color:var(--ink);outline:none;cursor:pointer;}
+.sched-sel:focus{border-color:var(--caramel);}
+/* completeness indicator */
+.complete-bar{background:var(--pure);border:1px solid var(--border);border-radius:var(--r-md);padding:10px 12px;}
+.cb-title{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--taupe);margin-bottom:7px;}
+.cb-items{display:flex;flex-direction:column;gap:4px;}
+.cb-item{display:flex;align-items:center;gap:7px;font-size:11.5px;}
+.cb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.cb-item.done{color:var(--mocha);}
+.cb-item.miss{color:var(--khaki);}
+.cb-item.done .cb-dot{background:var(--sage);}
+.cb-item.miss .cb-dot{background:var(--linen);border:1px solid var(--khaki);}
+
+/* FOOTER */
+.ep-foot{padding:11px 14px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
+.save-btn{width:100%;height:38px;border-radius:var(--r-md);border:none;background:var(--ink);color:var(--oyster);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .12s;}
+.save-btn:hover{background:var(--mocha);}
+.save-btn i{font-size:15px;}
+.ep-sec-btns{display:flex;gap:6px;}
+.ep-sec-btn{flex:1;height:30px;border-radius:var(--r-md);border:1px solid var(--border);background:transparent;font-family:'Poppins',sans-serif;font-size:11px;font-weight:500;color:var(--mocha);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .12s;}
+.ep-sec-btn:hover{background:var(--linen);}
+.ep-sec-btn.danger{color:var(--red);border-color:#EDCECE;}
+.ep-sec-btn.danger:hover{background:var(--red-bg);}
+.ep-sec-btn i{font-size:13px;}
+/* sched btn */
+.sched-btn{width:100%;height:34px;border-radius:var(--r-md);border:1.5px solid var(--sage);background:transparent;color:var(--sage);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .12s;}
+.sched-btn:hover{background:var(--sage-bg);}
+.sched-btn i{font-size:14px;}
+
+/* toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--oyster);font-size:12.5px;font-weight:500;padding:10px 20px;border-radius:var(--r-lg);opacity:0;transition:all .2s;pointer-events:none;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* mobile */
+@media(max-width:768px){
+  .sb{display:none;}
+  .body-grid{grid-template-columns:1fr;}
+  .edit-panel{display:none;position:fixed;inset:0;z-index:100;border-radius:var(--r-xl) var(--r-xl) 0 0;top:auto;height:90vh;}
+  .edit-panel.mob-open{display:flex;}
+  .stat-bar{overflow-x:auto;padding:10px 14px;}
+  .stat-card{min-width:100px;}
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.content{animation:fadeUp .25s ease both;}
+*{scrollbar-width:thin;scrollbar-color:var(--khaki) transparent;}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-brand">
+    <div class="sb-logo" onclick="window.location.href='index.html'"><em>内容</em>平台</div>
+    <div class="sb-tag">小红书运营助手</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sbg">
+      <div class="sbg-lbl">工具</div>
+      <div class="ni" onclick="window.location.href='index.html'"><i class="ti ti-layout-dashboard"></i><span>首页</span></div>
+      <div class="ni" onclick="window.location.href='suzaiku.html'"><i class="ti ti-stack-2"></i><span>素材库</span></div>
+      <div class="ni" onclick="window.location.href='postcraft.html'"><i class="ti ti-writing"></i><span>创作</span></div>
+      <div class="ni on"><i class="ti ti-calendar-event"></i><span>排期</span></div>
+    </div>
+    <div class="sbg">
+      <div class="sbg-lbl">发布中心</div>
+      <div class="ni on"><i class="ti ti-layout-kanban"></i><span>草稿库</span><span class="nb" id="sb-draft-count">21</span></div>
+      <div class="ni" onclick="window.location.href='calendar.html'"><i class="ti ti-calendar-event"></i><span>排期日历</span></div>
+      <div class="ni"><i class="ti ti-circle-check"></i><span>发布记录</span></div>
+    </div>
+  </div>
+  <div class="sb-foot">
+    <button class="sb-cta" onclick="newDraft()"><i class="ti ti-plus"></i>新建草稿</button>
+    <button class="sb-ghost" onclick="window.location.href='postcraft.html'"><i class="ti ti-sparkles"></i>AI 生成文案</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="crumb">
+      <span class="r" onclick="window.location.href='index.html'">首页</span>
+      <span class="sep">›</span>
+      <span class="cur">草稿库</span>
+    </div>
+    <div class="tb-r">
+      <button class="tbtn g"><i class="ti ti-adjustments-horizontal"></i>过滤</button>
+      <button class="tbtn p" onclick="newDraft()"><i class="ti ti-plus"></i>新建草稿</button>
+      <div class="tb-av">王</div>
+    </div>
+  </header>
+
+  <div class="content">
+    <!-- STAT BAR -->
+    <div class="stat-bar">
+      <div class="stat-card accent">
+        <div class="sc-n" id="st-total">21</div>
+        <div class="sc-lbl">草稿总数</div>
+        <div class="sc-sub" id="st-unsched">0 已排期</div>
+      </div>
+      <div class="stat-card" onclick="filterStatus('pending')">
+        <div class="sc-n" id="st-pending">21</div>
+        <div class="sc-lbl">待排期</div>
+        <div class="sc-sub">未设时间</div>
+      </div>
+      <div class="stat-card" onclick="filterStatus('scheduled')">
+        <div class="sc-n" id="st-scheduled">0</div>
+        <div class="sc-lbl">已排期</div>
+        <div class="sc-sub">小红书</div>
+      </div>
+      <div class="stat-card" onclick="filterStatus('published')">
+        <div class="sc-n" id="st-published">8</div>
+        <div class="sc-lbl">本月已发</div>
+        <div class="sc-sub">篇内容</div>
+      </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <div class="ftabs">
+        <button class="ftab on" data-s="all" onclick="filterStatus('all',this)">全部</button>
+        <button class="ftab" data-s="draft" onclick="filterStatus('draft',this)">草稿</button>
+        <button class="ftab" data-s="scheduled" onclick="filterStatus('scheduled',this)">已排期</button>
+        <button class="ftab" data-s="published" onclick="filterStatus('published',this)">已发布</button>
+      </div>
+      <div class="fdiv"></div>
+      <div class="cat-chips" id="cat-chips">
+        <button class="cchip on" data-cat="all" onclick="filterCat('all',this)" style="background:var(--ink);color:var(--oyster);">所有分类</button>
+      </div>
+      <div class="bar-r">
+        <div class="sbox">
+          <i class="ti ti-search"></i>
+          <input class="sinp" id="search-inp" placeholder="搜索草稿…" oninput="renderCards()" type="text">
+        </div>
+      </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="body-grid">
+      <div class="card-area" id="card-area">
+        <div class="cards-grid" id="cards-grid"></div>
+      </div>
+
+      <!-- EDIT PANEL -->
+      <div class="edit-panel" id="edit-panel">
+        <div class="ep-empty" id="ep-empty">
+          <i class="ti ti-hand-click"></i>
+          <p>点击任意草稿查看和编辑</p>
+        </div>
+        <div id="ep-content" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+          <div class="ep-head">
+            <div class="ep-title" id="ep-title">编辑草稿</div>
+            <button class="ep-close" onclick="closePanel()"><i class="ti ti-x"></i></button>
+          </div>
+          <div class="ep-body" id="ep-body">
+            <!-- image upload -->
+            <div>
+              <div class="ef-label">封面图片</div>
+              <div class="img-upload" id="img-upload" onclick="triggerImgUpload()">
+                <div class="img-upload-overlay"><i class="ti ti-camera"></i>更换图片</div>
+                <i class="ti ti-photo img-icon"></i>
+                <div class="img-lbl">点击上传图片</div>
+                <div class="img-sub">支持 JPG、PNG、WEBP</div>
+              </div>
+              <input type="file" id="img-file-input" accept="image/*" style="display:none;" onchange="handleImgUpload(event)">
+            </div>
+
+            <!-- title -->
+            <div>
+              <div class="ef-label">标题 <span id="title-count" style="font-size:10px;color:var(--taupe);font-weight:400;text-transform:none;letter-spacing:0;">0/20</span></div>
+              <input class="ef-inp" id="ef-title" placeholder="输入标题，建议含 emoji，20字以内" oninput="onTitleChange()">
+            </div>
+
+            <!-- body -->
+            <div>
+              <div class="ef-label">文案正文</div>
+              <textarea class="ef-inp" id="ef-body" rows="7" placeholder="在这里编写正文…" oninput="onBodyChange()"></textarea>
+              <div class="char-bars" id="char-bars">
+                <div class="cbar-row">
+                  <span class="cbar-lbl">小红书</span>
+                  <div class="cbar-track"><div class="cbar-fill cb-xhs" id="cb-xhs" style="width:0%;"></div></div>
+                  <span class="cbar-count" id="cc-xhs">0/1000</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- hashtags -->
+            <div>
+              <div class="ef-label">标签（输入后按回车）</div>
+              <div class="tags-wrap" onclick="document.getElementById('htag-inp').focus()" id="htags-wrap">
+                <input class="tag-inp" id="htag-inp" placeholder="#标签1 #标签2…" onkeydown="addHashtag(event)">
+              </div>
+            </div>
+
+            <!-- category -->
+            <div>
+              <div class="ef-label">分类</div>
+              <div class="cat-sel" id="cat-sel"></div>
+            </div>
+
+            <!-- platform -->
+            <div>
+              <div class="ef-label">发布平台</div>
+              <div class="plat-sel">
+                <button class="plat-btn on" data-p="xhs" onclick="togglePlat(this)"><i class="ti ti-brand-instagram"></i>小红书</button>
+              </div>
+            </div>
+
+            <!-- schedule -->
+            <div>
+              <div class="ef-label">定时发布</div>
+              <div class="sched-row">
+                <input class="sched-date" type="date" id="sched-date" onchange="onSchedChange()">
+                <select class="sched-sel" id="sched-hour" onchange="onSchedChange()">
+                  <option value="">时</option>
+                  <option>08</option><option>09</option><option>10</option><option>11</option>
+                  <option>12</option><option>13</option><option>14</option><option>15</option>
+                  <option>16</option><option>17</option><option>18</option><option>19</option>
+                  <option>20</option><option>21</option><option>22</option>
+                </select>
+                <select class="sched-sel" id="sched-min" onchange="onSchedChange()">
+                  <option value="">分</option>
+                  <option>00</option><option>15</option><option>30</option><option>45</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- completeness -->
+            <div class="complete-bar">
+              <div class="cb-title">完成度检查</div>
+              <div class="cb-items" id="cb-items"></div>
+            </div>
+
+          </div>
+          <div class="ep-foot">
+            <button class="sched-btn" id="sched-confirm-btn" onclick="confirmSchedule()" style="display:none;">
+              <i class="ti ti-calendar-event"></i>确认排期发布
+            </button>
+            <button class="save-btn" onclick="saveDraft()"><i class="ti ti-check"></i>保存草稿</button>
+            <div class="ep-sec-btns">
+              <button class="ep-sec-btn" onclick="copyDraft()"><i class="ti ti-copy"></i>复制全文</button>
+              <button class="ep-sec-btn" onclick="duplicateDraft()"><i class="ti ti-copy-plus"></i>复制草稿</button>
+              <button class="ep-sec-btn danger" onclick="deleteDraft()"><i class="ti ti-trash"></i>删除</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══ CATEGORIES ═══ */
+const CATS = [
+  {id:'xhs',label:'小红书',color:'#F5E4D5',text:'#864C24'},
+  {id:'lifestyle',label:'生活方式',color:'#E6EEE0',text:'#3E5432'},
+  {id:'skincare',label:'护肤',color:'#ECE8F5',text:'#5340A0'},
+  {id:'food',label:'美食',color:'#F2E8D0',text:'#7A5518'},
+  {id:'travel',label:'旅行',color:'#E8EEF5',text:'#2A5080'},
+  {id:'fashion',label:'穿搭',color:'#F5EBF0',text:'#803060'},
+];
+
+/* ═══ DATA ═══ */
+let drafts = [
+  {id:1,title:'🧴 The Ordinary 果酸水保姆级使用指南',body:'第一次用TO果酸水？别急！新手必须先建立耐受...\n\n【第一步：低频开始】\n一周2-3次，从最低浓度开始\n皮肤不适立刻停用\n\n【第二步：观察皮肤】\n正常反应：轻微刺痛感（1-2分钟内消退）\n异常反应：持续灼热、大面积红肿',hashtags:['TO果酸水','护肤','功效成分','新手必看'],cats:['skincare'],platform:'xhs',status:'draft',schedDate:'',schedTime:'',img:'',created:'2026-06-04',completeness:85},
+  {id:2,title:'越懒的人皮肤越好？反直觉护肤法',body:'你有没有发现，身边那些皮肤超好的人，反而不怎么护肤？\n\n今天来聊聊「懒人护肤法」——为什么少折腾皮肤反而更好...',hashtags:['懒人护肤','极简护肤','护肤心得'],cats:['skincare'],platform:'xhs',status:'draft',schedDate:'',schedTime:'',img:'',created:'2026-06-03',completeness:60},
+  {id:3,title:'🌞 防晒误区大盘点！你每天都做错的那件事',body:'99%的人用防晒的姿势是错的！\n\n❌ 误区一：SPF越高越好\n✅ 正解：日常通勤SPF30 PA++足够...',hashtags:['防晒','护肤误区','成分党'],cats:['skincare'],platform:'xhs',status:'scheduled',schedDate:'2026-06-07',schedTime:'10:00',img:'',created:'2026-06-02',completeness:100},
+  {id:4,title:'新加坡超平价好物分享 🛒',body:'在新加坡生活N年，这些平价好物真的回购无数次...',hashtags:['新加坡','好物分享','平价推荐'],cats:['lifestyle'],platform:'xhs',status:'draft',schedDate:'',schedTime:'',img:'',created:'2026-06-01',completeness:40},
+  {id:5,title:'28天皮肤蜕变计划：油痘肌到哑光肌全过程',body:'28天前，我的脸是这样的...\n（对比图）\n\n28天后，真的变了！来分享一下我的全过程...',hashtags:['护肤','28天挑战','油痘肌'],cats:['skincare'],platform:'xhs',status:'published',schedDate:'2026-06-01',schedTime:'09:00',img:'',created:'2026-05-28',completeness:100},
+  {id:6,title:'敏感肌选防晒指南：4个关键指标',body:'敏感肌选防晒最怕踩雷，今天教你4个选品指标...',hashtags:['敏感肌','防晒选择','护肤'],cats:['skincare'],platform:'xhs',status:'draft',schedDate:'',schedTime:'',img:'',created:'2026-05-30',completeness:70},
+  {id:7,title:'📱 我的桌面收纳好物清单（附购买链接）',body:'工作台乱成一团？来看看我的收纳方案！\n\n1. 桌面收纳盒：宜家TJENA系列\n2. 显示器支架：乐歌E1...',hashtags:['桌面收纳','好物推荐','居家'],cats:['lifestyle'],platform:'xhs',status:'draft',schedDate:'',schedTime:'',img:'',created:'2026-05-27',completeness:55},
+  {id:8,title:'新加坡周末去哪里？5个适合拍照的打卡地',body:'住新加坡这么久，发现这5个地方特别适合周末打卡...',hashtags:['新加坡','周末打卡','拍照地'],cats:['travel'],platform:'xhs',status:'scheduled',schedDate:'2026-06-10',schedTime:'14:00',img:'',created:'2026-05-25',completeness:90},
+];
+
+let curStatus = 'all';
+let curCat = 'all';
+let selId = null;
+let curDraftTags = [];
+let curDraftCats = [];
+let curDraftPlats = ['xhs'];
+
+/* ═══ INIT ═══ */
+buildCatChips();
+renderCards();
+updateStats();
+
+/* ═══ CATEGORY CHIPS ═══ */
+function buildCatChips() {
+  const con = document.getElementById('cat-chips');
+  // clear existing except "all"
+  while (con.children.length > 1) con.removeChild(con.lastChild);
+  CATS.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'cchip off';
+    btn.dataset.cat = c.id;
+    btn.style.cssText = `background:${c.color};color:${c.text};`;
+    btn.textContent = c.label;
+    btn.onclick = () => filterCat(c.id, btn);
+    con.appendChild(btn);
+  });
+  // category selector in edit panel
+  const sel = document.getElementById('cat-sel');
+  sel.innerHTML = CATS.map(c =>
+    `<button class="cat-btn" data-cat="${c.id}" style="background:${c.color};color:${c.text};border-color:transparent;" onclick="toggleCat('${c.id}',this)">${c.label}</button>`
+  ).join('');
+}
+
+/* ═══ STATS ═══ */
+function updateStats() {
+  const total = drafts.length;
+  const pending = drafts.filter(d => d.status === 'draft').length;
+  const scheduled = drafts.filter(d => d.status === 'scheduled').length;
+  const published = drafts.filter(d => d.status === 'published').length;
+  document.getElementById('st-total').textContent = total;
+  document.getElementById('st-unsched').textContent = scheduled + ' 已排期';
+  document.getElementById('st-pending').textContent = pending;
+  document.getElementById('st-scheduled').textContent = scheduled;
+  document.getElementById('st-published').textContent = published;
+  document.getElementById('sb-draft-count').textContent = total;
+}
+
+/* ═══ FILTERS ═══ */
+function filterStatus(s, btn) {
+  curStatus = s;
+  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  renderCards();
+}
+function filterCat(cat, btn) {
+  curCat = cat;
+  document.querySelectorAll('.cchip').forEach(b => {
+    b.classList.remove('on');
+    if (b.dataset.cat === 'all') b.style.cssText = 'background:transparent;color:var(--taupe);border:1px solid var(--border);';
+  });
+  btn.classList.add('on');
+  if (cat === 'all') btn.style.cssText = 'background:var(--ink);color:var(--oyster);';
+  renderCards();
+}
+
+/* ═══ RENDER CARDS ═══ */
+function renderCards() {
+  const q = document.getElementById('search-inp').value.toLowerCase().trim();
+  let items = drafts.filter(d => {
+    const sOK = curStatus === 'all' || d.status === curStatus;
+    const cOK = curCat === 'all' || d.cats.includes(curCat);
+    const qOK = !q || d.title.toLowerCase().includes(q) || d.body.toLowerCase().includes(q);
+    return sOK && cOK && qOK;
+  });
+
+  const grid = document.getElementById('cards-grid');
+  grid.innerHTML = '';
+
+  items.forEach(d => grid.appendChild(makeDraftCard(d)));
+
+  // new draft card
+  const newCard = document.createElement('div');
+  newCard.className = 'dcard-new';
+  newCard.onclick = newDraft;
+  newCard.innerHTML = '<i class="ti ti-plus"></i><span>新建草稿</span>';
+  grid.appendChild(newCard);
+}
+
+function makeDraftCard(d) {
+  const el = document.createElement('div');
+  el.className = 'dcard' + (selId === d.id ? ' sel' : '');
+  el.onclick = () => openEdit(d.id);
+
+  const statusLabel = {draft:'草稿',scheduled:'已排期',published:'已发布'}[d.status];
+  const statusCls = {draft:'ds-draft',scheduled:'ds-scheduled',published:'ds-published'}[d.status];
+  const cats = d.cats.map(c => { const cat = CATS.find(x => x.id === c); return cat ? `<span class="dc-cat" style="background:${cat.color};color:${cat.text};">${cat.label}</span>` : ''; }).join('');
+  const schedLine = d.status === 'scheduled' ? `<div class="dc-sched"><i class="ti ti-calendar-event"></i>${d.schedDate} ${d.schedTime}</div>` : '';
+  const platIcon = d.platform === 'xhs' ? 'ti-brand-instagram' : 'ti-brand-instagram';
+
+  el.innerHTML = `
+    <div class="dc-img">
+      ${d.img ? `<img src="${d.img}" alt="">` : `<div class="dc-img-placeholder"><i class="ti ti-photo"></i><span>无封面</span></div>`}
+      <span class="dc-status ${statusCls}">${statusLabel}</span>
+      <div class="dc-cats">${cats}</div>
+    </div>
+    <div class="dc-body">
+      <div class="dc-title">${d.title}</div>
+      ${schedLine}
+      <div class="dc-meta">
+        <span class="dc-platform"><i class="ti ${platIcon}"></i>${d.platform === 'xhs' ? '小红书' : 'IG'}</span>
+        <span class="dc-date">${d.created}</span>
+      </div>
+    </div>
+    <div class="dc-overlay">
+      <button class="dco-btn" title="编辑" onclick="event.stopPropagation();openEdit(${d.id})"><i class="ti ti-edit"></i></button>
+      <button class="dco-btn" title="排期" onclick="event.stopPropagation();quickSchedule(${d.id})"><i class="ti ti-calendar-event"></i></button>
+      <button class="dco-btn" title="删除" onclick="event.stopPropagation();quickDelete(${d.id})"><i class="ti ti-trash"></i></button>
+    </div>`;
+  return el;
+}
+
+/* ═══ EDIT PANEL ═══ */
+function openEdit(id) {
+  selId = id;
+  const d = drafts.find(x => x.id === id);
+  document.getElementById('ep-empty').style.display = 'none';
+  const ec = document.getElementById('ep-content');
+  ec.style.display = 'flex';
+
+  document.getElementById('ep-title').textContent = d.status === 'published' ? '查看草稿' : '编辑草稿';
+  document.getElementById('ef-title').value = d.title;
+  document.getElementById('ef-body').value = d.body;
+  document.getElementById('sched-date').value = d.schedDate;
+  document.getElementById('sched-hour').value = d.schedTime ? d.schedTime.split(':')[0] : '';
+  document.getElementById('sched-min').value = d.schedTime ? d.schedTime.split(':')[1] : '';
+
+  // image
+  const imgWrap = document.getElementById('img-upload');
+  if (d.img) {
+    imgWrap.classList.add('has-img');
+    imgWrap.querySelector('.ti-photo') && (imgWrap.innerHTML = `<img src="${d.img}" alt=""><div class="img-upload-overlay"><i class="ti ti-camera"></i>更换图片</div>`);
+  } else {
+    imgWrap.classList.remove('has-img');
+    imgWrap.innerHTML = `<i class="ti ti-photo img-icon"></i><div class="img-lbl">点击上传图片</div><div class="img-sub">支持 JPG、PNG、WEBP</div>`;
+  }
+  imgWrap.onclick = triggerImgUpload;
+
+  // tags
+  curDraftTags = [...d.hashtags];
+  renderTagsInPanel();
+
+  // cats
+  curDraftCats = [...d.cats];
+  document.querySelectorAll('#cat-sel .cat-btn').forEach(btn => {
+    const isOn = curDraftCats.includes(btn.dataset.cat);
+    btn.style.opacity = isOn ? '1' : '0.4';
+    btn.style.outline = isOn ? '2px solid var(--ink)' : 'none';
+  });
+
+  // platforms
+  curDraftPlats = [d.platform];
+  document.querySelectorAll('.plat-btn').forEach(btn => {
+    btn.classList.toggle('on', curDraftPlats.includes(btn.dataset.p));
+  });
+
+  // sched button
+  const hasDate = !!d.schedDate;
+  document.getElementById('sched-confirm-btn').style.display = hasDate && d.status !== 'published' ? '' : 'none';
+
+  onTitleChange();
+  onBodyChange();
+  updateCompleteness(d);
+  renderCards();
+
+  // mobile
+  if (window.innerWidth <= 768) document.getElementById('edit-panel').classList.add('mob-open');
+}
+
+function closePanel() {
+  selId = null;
+  document.getElementById('ep-empty').style.display = '';
+  document.getElementById('ep-content').style.display = 'none';
+  document.getElementById('edit-panel').classList.remove('mob-open');
+  renderCards();
+}
+
+/* ═══ IMAGE ═══ */
+function triggerImgUpload() { document.getElementById('img-file-input').click(); }
+function handleImgUpload(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const d = drafts.find(x => x.id === selId);
+    if (d) { d.img = ev.target.result; openEdit(selId); }
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ═══ FIELDS ═══ */
+function onTitleChange() {
+  const val = document.getElementById('ef-title').value;
+  const len = val.replace(/\s/g,'').length;
+  const cc = document.getElementById('title-count');
+  cc.textContent = len + '/20';
+  cc.style.color = len > 20 ? 'var(--red)' : len > 16 ? 'var(--amber)' : 'var(--taupe)';
+  syncCompleteness();
+}
+function onBodyChange() {
+  const val = document.getElementById('ef-body').value;
+  const len = val.replace(/\s/g,'').length;
+  const xhsFill = document.getElementById('cb-xhs');
+  const ccXhs = document.getElementById('cc-xhs');
+  const pct = Math.min(len / 1000 * 100, 100);
+  xhsFill.style.width = pct + '%';
+  xhsFill.className = 'cbar-fill cb-xhs' + (len > 1000 ? ' over' : len > 800 ? ' warn' : '');
+  ccXhs.textContent = len + '/1000';
+  ccXhs.className = 'cbar-count' + (len > 1000 ? ' over' : len > 800 ? ' warn' : '');
+  syncCompleteness();
+}
+function onSchedChange() {
+  const date = document.getElementById('sched-date').value;
+  document.getElementById('sched-confirm-btn').style.display = date ? '' : 'none';
+  syncCompleteness();
+}
+
+function addHashtag(e) {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const inp = document.getElementById('htag-inp');
+  let val = inp.value.trim().replace(/^#/, '');
+  if (!val) return;
+  if (!curDraftTags.includes(val)) curDraftTags.push(val);
+  renderTagsInPanel(); inp.value = '';
+  syncCompleteness();
+}
+function removeTag(tag) {
+  curDraftTags = curDraftTags.filter(t => t !== tag);
+  renderTagsInPanel();
+  syncCompleteness();
+}
+function renderTagsInPanel() {
+  const wrap = document.getElementById('htags-wrap');
+  const inp = document.getElementById('htag-inp');
+  wrap.innerHTML = '';
+  curDraftTags.forEach(t => {
+    const span = document.createElement('span');
+    span.className = 'htag';
+    span.innerHTML = `#${t}<i class="ti ti-x" onclick="removeTag('${t}')"></i>`;
+    wrap.appendChild(span);
+  });
+  wrap.appendChild(inp);
+  inp.placeholder = curDraftTags.length ? '' : '#标签1 #标签2…';
+}
+
+function toggleCat(cat, btn) {
+  if (curDraftCats.includes(cat)) curDraftCats = curDraftCats.filter(c => c !== cat);
+  else curDraftCats.push(cat);
+  btn.style.opacity = curDraftCats.includes(cat) ? '1' : '0.4';
+  btn.style.outline = curDraftCats.includes(cat) ? '2px solid var(--ink)' : 'none';
+  syncCompleteness();
+}
+function togglePlat(btn) {
+  const p = btn.dataset.p;
+  if (curDraftPlats.includes(p)) { if (curDraftPlats.length === 1) return; curDraftPlats = curDraftPlats.filter(x => x !== p); }
+  else curDraftPlats.push(p);
+  document.querySelectorAll('.plat-btn').forEach(b => b.classList.toggle('on', curDraftPlats.includes(b.dataset.p)));
+}
+
+/* ═══ COMPLETENESS ═══ */
+function syncCompleteness() {
+  if (!selId) return;
+  const d = drafts.find(x => x.id === selId);
+  if (!d) return;
+  d.title = document.getElementById('ef-title').value;
+  d.body = document.getElementById('ef-body').value;
+  d.hashtags = [...curDraftTags];
+  d.cats = [...curDraftCats];
+  d.schedDate = document.getElementById('sched-date').value;
+  updateCompleteness(d);
+}
+function updateCompleteness(d) {
+  const checks = [
+    {label:'标题已填写', done: !!d.title.trim()},
+    {label:'文案正文已填写', done: d.body.trim().length > 50},
+    {label:'标签已添加', done: d.hashtags.length > 0},
+    {label:'分类已选择', done: d.cats.length > 0},
+    {label:'排期时间已设置', done: !!d.schedDate},
+    {label:'封面图片已上传', done: !!d.img},
+  ];
+  const con = document.getElementById('cb-items');
+  con.innerHTML = checks.map(c =>
+    `<div class="cb-item ${c.done ? 'done' : 'miss'}"><div class="cb-dot"></div>${c.label}</div>`
+  ).join('');
+  const pct = Math.round(checks.filter(c => c.done).length / checks.length * 100);
+  d.completeness = pct;
+}
+
+/* ═══ ACTIONS ═══ */
+function saveDraft() {
+  if (!selId) return;
+  const d = drafts.find(x => x.id === selId);
+  d.title = document.getElementById('ef-title').value;
+  d.body = document.getElementById('ef-body').value;
+  d.hashtags = [...curDraftTags];
+  d.cats = [...curDraftCats];
+  d.platform = curDraftPlats[0] || 'xhs';
+  d.schedDate = document.getElementById('sched-date').value;
+  const h = document.getElementById('sched-hour').value;
+  const m = document.getElementById('sched-min').value;
+  d.schedTime = h && m ? `${h}:${m}` : '';
+  if (d.schedDate && d.status === 'draft') d.status = 'scheduled';
+  updateStats();
+  renderCards();
+  showToast('草稿已保存 ✓');
+}
+function confirmSchedule() {
+  saveDraft();
+  showToast('已设置排期 ✓ 可在排期日历查看');
+}
+function copyDraft() {
+  if (!selId) return;
+  const d = drafts.find(x => x.id === selId);
+  const text = [d.title, d.body, d.hashtags.map(t=>'#'+t).join(' ')].filter(Boolean).join('\n\n');
+  navigator.clipboard?.writeText(text);
+  showToast('已复制全文 ✓');
+}
+function duplicateDraft() {
+  if (!selId) return;
+  const d = drafts.find(x => x.id === selId);
+  const newD = { ...d, id: Date.now(), title: d.title + '（副本）', status: 'draft', schedDate: '', schedTime: '', created: new Date().toISOString().slice(0,10) };
+  drafts.unshift(newD);
+  updateStats(); renderCards();
+  showToast('已复制为新草稿');
+}
+function deleteDraft() {
+  if (!selId) return;
+  if (!confirm('确定删除这篇草稿吗？此操作不可撤销。')) return;
+  drafts = drafts.filter(x => x.id !== selId);
+  closePanel(); updateStats(); renderCards();
+  showToast('已删除');
+}
+function quickDelete(id) {
+  if (!confirm('确定删除？')) return;
+  drafts = drafts.filter(x => x.id !== id);
+  if (selId === id) closePanel();
+  updateStats(); renderCards();
+  showToast('已删除');
+}
+function quickSchedule(id) {
+  openEdit(id);
+  setTimeout(() => document.getElementById('sched-date').focus(), 100);
+}
+function newDraft() {
+  const id = Date.now();
+  drafts.unshift({id,title:'',body:'',hashtags:[],cats:[],platform:'xhs',status:'draft',schedDate:'',schedTime:'',img:'',created:new Date().toISOString().slice(0,10),completeness:0});
+  updateStats(); renderCards(); openEdit(id);
+  setTimeout(() => document.getElementById('ef-title').focus(), 50);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg;
+  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>

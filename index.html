@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>内容平台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root {
+  --oyster:     #F1ECE1;
+  --pure:       #F8F5F0;
+  --linen:      #EDE8DF;
+  --khaki:      #C3B091;
+  --taupe:      #9A8C7E;
+  --mocha:      #5C4A3A;
+  --ink:        #2E1F14;
+  --caramel:    #864C24;
+  --autumn:     #643C20;
+  --caramel-l:  #E8D5C0;
+  --caramel-ll: #F5EDE3;
+  --sage:       #5A7048;
+  --sage-bg:    #E6EEE0;
+  --sage-dark:  #3E5432;
+  --amber:      #7A5518;
+  --amber-bg:   #F2E8D0;
+  --white:      #FFFFFF;
+  --border:     rgba(163,140,115,.2);
+  --border2:    rgba(163,140,115,.11);
+  --r-sm:4px; --r-md:10px; --r-lg:14px; --r-xl:20px;
+  --sidebar-w:200px; --top-h:52px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;}
+body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);height:100vh;overflow:hidden;display:flex;}
+
+/* ═══ SIDEBAR ═══ */
+.sb{width:var(--sidebar-w);flex-shrink:0;background:var(--pure);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;}
+.sb-brand{padding:18px 16px 14px;border-bottom:1px solid var(--border);}
+.sb-logo{font-family:'DM Serif Display',serif;font-size:16px;color:var(--ink);}
+.sb-logo em{font-style:italic;color:var(--caramel);}
+.sb-tag{font-size:10px;color:var(--taupe);letter-spacing:.03em;margin-top:1px;}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 0;}
+.sb-nav::-webkit-scrollbar{width:0;}
+.sb-grp{margin-bottom:2px;}
+.sb-grp-lbl{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--khaki);padding:10px 16px 4px;display:flex;align-items:center;gap:6px;}
+.sb-grp-lbl::after{content:'';flex:1;height:1px;background:var(--border2);}
+.ni{display:flex;align-items:center;gap:9px;padding:7px 14px 7px 16px;font-size:12px;color:var(--taupe);cursor:pointer;border-left:2px solid transparent;transition:all .12s;}
+.ni:hover{color:var(--mocha);background:var(--linen);}
+.ni.on{color:var(--caramel);background:var(--caramel-ll);border-left-color:var(--caramel);font-weight:600;}
+.ni i{font-size:15px;flex-shrink:0;}
+.nb{margin-left:auto;font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:var(--linen);color:var(--taupe);}
+.ni.on .nb{background:var(--caramel-l);color:var(--autumn);}
+.n-new{margin-left:auto;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;background:#F0E5D8;color:var(--caramel);}
+.sb-foot{padding:10px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:5px;}
+.sb-cta{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r-md);background:var(--caramel);color:var(--oyster);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:background .13s;}
+.sb-cta:hover{background:var(--autumn);}
+.sb-cta i{font-size:14px;}
+.sb-ghost{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:var(--r-md);background:transparent;color:var(--taupe);font-family:'Poppins',sans-serif;font-size:11.5px;cursor:pointer;border:1px solid var(--border);transition:all .12s;}
+.sb-ghost:hover{color:var(--mocha);background:var(--linen);}
+.sb-ghost i{font-size:14px;}
+
+/* ═══ MAIN ═══ */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.topbar{height:var(--top-h);flex-shrink:0;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:10px;}
+.tb-title{font-size:14px;font-weight:600;color:var(--ink);}
+.tb-date{font-size:11.5px;color:var(--taupe);}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.s-box{position:relative;display:flex;align-items:center;}
+.s-box i{position:absolute;left:10px;font-size:14px;color:var(--taupe);pointer-events:none;}
+.s-inp{height:32px;width:185px;padding:0 12px 0 32px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--oyster);font-family:'Poppins',sans-serif;font-size:12px;color:var(--ink);outline:none;transition:all .13s;}
+.s-inp:focus{border-color:var(--caramel);background:var(--white);}
+.s-inp::placeholder{color:var(--khaki);}
+.tb-btn{height:32px;padding:0 13px;border-radius:var(--r-md);border:none;font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .12s;}
+.tb-btn.g{background:var(--oyster);color:var(--mocha);border:1px solid var(--border);}
+.tb-btn.g:hover{background:var(--linen);}
+.tb-btn.p{background:var(--caramel);color:var(--oyster);}
+.tb-btn.p:hover{background:var(--autumn);}
+.tb-btn i{font-size:14px;}
+.tb-av{width:30px;height:30px;border-radius:50%;background:var(--caramel-l);color:var(--autumn);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1.5px solid var(--border);}
+
+/* SCROLL */
+.content{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.content::-webkit-scrollbar{width:4px;}
+.content::-webkit-scrollbar-thumb{background:var(--khaki);border-radius:999px;}
+
+/* ═══ HERO ═══ */
+.hero{background:var(--white);border-bottom:1px solid var(--border);padding:16px 24px 15px;flex-shrink:0;}
+.hero-inner{display:flex;align-items:flex-start;gap:20px;}
+.hero-left{flex-shrink:0;}
+.hero-hi{font-size:10px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--caramel);}
+.hero-name{font-family:'DM Serif Display',serif;font-size:20px;color:var(--ink);line-height:1.25;}
+.hero-name em{font-style:italic;color:var(--caramel);}
+.hero-sub{font-size:11.5px;color:var(--taupe);margin-top:3px;line-height:1.6;}
+.hero-sub strong{color:var(--caramel);font-weight:500;}
+.compose-col{flex:1;min-width:0;}
+.cbox{display:flex;align-items:center;gap:0;background:var(--oyster);border:1.5px solid var(--border);border-radius:var(--r-xl);padding:3px 3px 3px 13px;transition:all .14s;}
+.cbox:focus-within{border-color:var(--caramel);box-shadow:0 0 0 3px rgba(134,76,36,.08);background:var(--white);}
+.cbox-ic{font-size:16px;color:var(--caramel);flex-shrink:0;margin-right:5px;}
+.cinp{flex:1;border:none;background:transparent;font-family:'Poppins',sans-serif;font-size:13px;color:var(--ink);outline:none;padding:8px 4px;}
+.cinp::placeholder{color:var(--khaki);}
+.cgo{height:38px;padding:0 18px;border-radius:var(--r-lg);border:none;background:var(--caramel);color:var(--oyster);font-family:'Poppins',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .13s;flex-shrink:0;}
+.cgo:hover{background:var(--autumn);}
+.cgo i{font-size:14px;}
+.hints{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.hint-lbl{font-size:10.5px;color:var(--taupe);}
+.hchip{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:var(--pure);color:var(--mocha);border:1px solid var(--border);cursor:pointer;font-family:'Poppins',sans-serif;transition:all .12s;}
+.hchip:hover{background:var(--caramel-ll);border-color:var(--caramel-l);color:var(--caramel);}
+
+/* ═══ PIPELINE ═══ */
+.pipe-wrap{background:var(--white);border-bottom:1px solid var(--border);padding:12px 24px 14px;flex-shrink:0;}
+.pipe-hd{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--taupe);margin-bottom:9px;display:flex;align-items:center;gap:8px;}
+.pipe-hd::after{content:'';flex:1;height:1px;background:var(--border2);}
+.pipe-row{display:flex;align-items:stretch;gap:0;}
+.pipe-stage{flex:1;position:relative;}
+.pipe-stage+.pipe-stage{margin-left:26px;}
+.pipe-stage+.pipe-stage::before{content:'›';position:absolute;left:-17px;top:50%;transform:translateY(-50%);font-size:17px;color:var(--khaki);line-height:1;}
+.pc{border:1px solid var(--border);border-radius:var(--r-md);padding:10px 13px;height:100%;display:flex;flex-direction:column;gap:3px;cursor:pointer;transition:all .13s;}
+.pc:hover{background:var(--linen);}
+.pc.warn{background:#FDF5EF;border-color:rgba(196,98,45,.3);}
+.pc.warn:hover{background:#FAF0E8;}
+.pc.low{background:#EFF5EA;border-color:rgba(90,112,72,.3);}
+.pc.low:hover{background:#E8F0E2;}
+.pc-nm{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--taupe);}
+.pc-n{font-size:24px;font-weight:700;line-height:1.1;color:var(--ink);}
+.pc.warn .pc-n{color:var(--caramel);}
+.pc.low  .pc-n{color:var(--sage);}
+.pc-sub{font-size:10.5px;color:var(--taupe);}
+.pc-pill{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:20px;display:inline-block;margin-top:3px;width:fit-content;}
+.pill-w{background:#F5E4D5;color:var(--caramel);}
+.pill-l{background:var(--sage-bg);color:var(--sage-dark);}
+.pill-g{background:var(--linen);color:var(--taupe);}
+/* diagnosis bar */
+.diag{margin-top:10px;display:flex;align-items:flex-start;gap:10px;padding:9px 12px;background:var(--caramel-ll);border-radius:var(--r-md);border-left:3px solid var(--caramel);}
+.diag i{font-size:15px;color:var(--caramel);flex-shrink:0;margin-top:1px;}
+.diag-text{font-size:11.5px;color:var(--mocha);line-height:1.6;}
+.diag-text strong{color:var(--caramel);font-weight:600;}
+
+/* ═══ BODY GRID ═══ */
+.body-grid{flex:1;display:grid;grid-template-columns:1fr 296px;min-height:0;overflow:hidden;}
+.left-p{overflow-y:auto;padding:16px 18px 28px 24px;display:flex;flex-direction:column;gap:18px;border-right:1px solid var(--border2);}
+.left-p::-webkit-scrollbar{width:4px;}
+.left-p::-webkit-scrollbar-thumb{background:var(--khaki);border-radius:999px;}
+.right-p{overflow-y:auto;padding:16px 22px 28px 16px;display:flex;flex-direction:column;gap:18px;background:var(--pure);}
+.right-p::-webkit-scrollbar{width:0;}
+
+/* SECTION HEADER */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.sh-l{display:flex;align-items:center;gap:8px;}
+.sh-ic{width:24px;height:24px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.ic-c{background:var(--caramel-ll);color:var(--caramel);}
+.ic-s{background:var(--sage-bg);color:var(--sage);}
+.ic-a{background:var(--amber-bg);color:var(--amber);}
+.ic-m{background:var(--linen);color:var(--mocha);}
+.sh-title{font-size:12.5px;font-weight:600;color:var(--ink);}
+.sh-link{font-size:11px;color:var(--caramel);font-weight:500;cursor:pointer;display:flex;align-items:center;gap:3px;text-decoration:none;transition:color .12s;}
+.sh-link:hover{color:var(--autumn);}
+
+/* ─── TASKS ─── */
+/* type toggle */
+.task-tabs{display:flex;gap:4px;margin-bottom:10px;}
+.ttab{font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--taupe);cursor:pointer;font-family:'Poppins',sans-serif;transition:all .12s;display:flex;align-items:center;gap:5px;}
+.ttab.on{background:var(--ink);color:var(--oyster);border-color:var(--ink);}
+.ttab .cnt{font-size:10px;font-weight:700;padding:1px 5px;border-radius:20px;background:rgba(255,255,255,.2);}
+.ttab:not(.on) .cnt{background:var(--linen);color:var(--taupe);}
+
+.task-list{display:flex;flex-direction:column;gap:6px;}
+.task{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);cursor:pointer;transition:all .13s;}
+.task:hover{background:var(--caramel-ll);border-color:var(--caramel-l);}
+.task.done{opacity:.45;}
+.task.sugg{border-style:dashed;}
+.task.sugg:hover{background:var(--linen);}
+.chk{width:17px;height:17px;border-radius:5px;border:1.5px solid var(--khaki);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .12s;}
+.task:hover .chk{border-color:var(--caramel);}
+.task.sugg .chk{border-style:dashed;}
+.chk.done{background:var(--sage);border-color:var(--sage);}
+.chk.done::after{content:'✓';font-size:10px;color:white;font-weight:700;}
+.task-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.task-body{flex:1;min-width:0;}
+.task-name{font-size:12.5px;font-weight:500;color:var(--ink);margin-bottom:2px;}
+.task-meta{font-size:11px;color:var(--taupe);line-height:1.5;}
+.task-meta .hi{color:var(--caramel);font-weight:500;}
+/* destination tag */
+.task-dest{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid var(--border);background:var(--pure);color:var(--mocha);cursor:pointer;font-family:'Poppins',sans-serif;flex-shrink:0;align-self:center;display:flex;align-items:center;gap:4px;transition:all .12s;white-space:nowrap;}
+.task-dest:hover{background:var(--caramel);color:var(--oyster);border-color:var(--caramel);}
+.task-dest i{font-size:12px;}
+/* must / sugg type label */
+.type-must{font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;background:#FAE5D5;color:var(--caramel);margin-left:6px;}
+.type-sugg{font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;background:var(--linen);color:var(--taupe);margin-left:6px;}
+
+/* ─── PRIORITY CARDS ─── */
+.prio-list{display:flex;flex-direction:column;gap:8px;}
+.pcard{background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);padding:12px 13px;cursor:pointer;transition:all .13s;}
+.pcard:hover{border-color:var(--caramel-l);box-shadow:0 2px 10px rgba(134,76,36,.06);}
+.pcard-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.pcard-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;display:flex;align-items:center;gap:4px;}
+.pb-hot{background:#F5E4D5;color:var(--caramel);}
+.pb-new{background:var(--sage-bg);color:var(--sage-dark);}
+.pcard-time{font-size:10.5px;color:var(--taupe);}
+/* source trail */
+.pcard-trail{font-size:10.5px;color:var(--taupe);margin-bottom:6px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.trail-node{display:flex;align-items:center;gap:3px;}
+.trail-sep{color:var(--khaki);}
+.trail-tag{font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px;}
+.tr-expl{background:#F0EDE8;color:var(--mocha);}
+.tr-faq {background:var(--sage-bg);color:var(--sage-dark);}
+.tr-hook{background:var(--caramel-ll);color:var(--caramel);}
+.pcard-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:7px;line-height:1.4;}
+.pcard-checks{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+.pck{font-size:10.5px;font-weight:500;padding:3px 8px;border-radius:20px;display:flex;align-items:center;gap:3px;}
+.pck.ok{background:var(--sage-bg);color:var(--sage-dark);}
+.pck.miss{background:#FDF0E8;color:var(--caramel);}
+.pck i{font-size:11px;}
+.pcard-foot{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border2);}
+.pcard-est{font-size:11px;color:var(--taupe);display:flex;align-items:center;gap:4px;}
+.pcard-est i{font-size:12px;}
+.pcard-cta{font-size:11.5px;font-weight:600;color:var(--caramel);display:flex;align-items:center;gap:4px;cursor:pointer;transition:color .12s;}
+.pcard-cta:hover{color:var(--autumn);}
+.pcard-cta i{font-size:12px;}
+
+/* ─── CALENDAR ─── */
+.cal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cal-title{font-size:13px;font-weight:600;color:var(--ink);}
+.cal-nav{display:flex;gap:4px;}
+.cnb{width:26px;height:26px;border-radius:var(--r-sm);border:1px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--taupe);transition:all .12s;}
+.cnb:hover{background:var(--linen);color:var(--mocha);}
+.cnb i{font-size:14px;}
+.cal-wds{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:3px;}
+.wd{font-size:9.5px;font-weight:600;text-align:center;color:var(--taupe);padding:3px 0;letter-spacing:.02em;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.cd{min-height:40px;border-radius:var(--r-sm);padding:3px 4px;cursor:pointer;transition:background .12s;border:1px solid transparent;}
+.cd:hover{background:var(--linen);}
+.cd.today{border-color:var(--caramel);background:var(--caramel-ll);}
+.cd.other{opacity:.3;}
+.cd-n{font-size:11px;font-weight:600;color:var(--ink);line-height:1;}
+.cd.today .cd-n{color:var(--caramel);}
+.cd.other .cd-n{color:var(--taupe);}
+.cd-posts{margin-top:2px;display:flex;flex-direction:column;gap:2px;}
+.cdp{font-size:9px;font-weight:500;color:var(--mocha);background:var(--caramel-l);border-radius:2px;padding:1px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;}
+.cdp.s{background:#C8DEC0;color:var(--sage-dark);}
+
+/* ─── AI RECO ─── */
+.ai-list{display:flex;flex-direction:column;gap:6px;}
+.ai-item{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;background:var(--white);border:1px solid var(--border2);border-radius:var(--r-md);cursor:pointer;transition:all .12s;}
+.ai-item:hover{background:var(--caramel-ll);border-color:var(--caramel-l);}
+.ai-num{width:19px;height:19px;border-radius:50%;background:var(--caramel-ll);color:var(--caramel);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.ai-body{}
+.ai-title{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:2px;}
+.ai-why{font-size:10.5px;color:var(--taupe);line-height:1.5;}
+.ai-why span{display:inline-flex;align-items:center;gap:3px;}
+.ai-src{font-size:9.5px;font-weight:600;padding:1px 5px;border-radius:20px;}
+.as-expl{background:#F0EDE8;color:var(--mocha);}
+.as-faq{background:var(--sage-bg);color:var(--sage-dark);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
+.hero{animation:fadeUp .3s ease both;}
+.pipe-wrap{animation:fadeUp .3s ease .05s both;}
+.body-grid{animation:fadeUp .3s ease .1s both;}
+*{scrollbar-width:thin;scrollbar-color:var(--khaki) transparent;}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-brand">
+    <div class="sb-logo" style="cursor:default;"><em>内容</em>平台</div>
+    <div class="sb-tag">小红书运营助手</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-grp">
+      <div class="sb-grp-lbl">工具</div>
+      <div class="ni on"><i class="ti ti-layout-dashboard"></i><span>首页</span></div>
+      <div class="ni" onclick="window.location.href='suzaiku.html'" style="cursor:pointer;"><i class="ti ti-stack-2"></i><span>素材库</span></div>
+      <div class="ni"><i class="ti ti-writing"></i><span>创作</span></div>
+      <div class="ni"><i class="ti ti-calendar-event"></i><span>排期</span></div>
+    </div>
+    <div class="sb-grp">
+      <div class="sb-grp-lbl">内容库</div>
+      <div class="ni"><i class="ti ti-bulb"></i><span>灵感</span><span class="nb">34</span></div>
+      <div class="ni"><i class="ti ti-microscope"></i><span>爆款拆解</span><span class="nb">7</span></div>
+      <div class="ni"><i class="ti ti-message-dots"></i><span>高频问题</span><span class="nb">12</span></div>
+    </div>
+    <div class="sb-grp">
+      <div class="sb-grp-lbl">创作中心</div>
+      <div class="ni"><i class="ti ti-hook"></i><span>Hook</span><span class="nb">21</span></div>
+      <div class="ni"><i class="ti ti-text-size"></i><span>标题</span><span class="nb">45</span></div>
+      <div class="ni"><i class="ti ti-cursor-text"></i><span>CTA</span><span class="nb">18</span></div>
+      <div class="ni"><i class="ti ti-writing"></i><span>AI 生成</span><span class="n-new">NEW</span></div>
+    </div>
+    <div class="sb-grp">
+      <div class="sb-grp-lbl">发布中心</div>
+      <div class="ni on"><i class="ti ti-layout-kanban"></i><span>草稿库</span><span class="nb">21</span></div>
+      <div class="ni" onclick="window.location.href=\'calendar.html\'"><i class="ti ti-calendar-event"></i><span>排期日历</span></div>
+      <div class="ni"><i class="ti ti-circle-check"></i><span>发布记录</span></div>
+    </div>
+  </div>
+  <div class="sb-foot">
+    <button class="sb-cta"><i class="ti ti-download"></i>导入分析结果</button>
+    <button class="sb-ghost"><i class="ti ti-settings"></i>设置</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <span class="tb-title">今日工作台</span>
+    <span class="tb-date" id="today-date"></span>
+    <div class="tb-right">
+      <div class="s-box"><i class="ti ti-search"></i><input class="s-inp" placeholder="搜索素材、文案…" type="text"></div>
+      <button class="tb-btn g"><i class="ti ti-adjustments-horizontal"></i>过滤</button>
+      <button class="tb-btn p"><i class="ti ti-plus"></i>导入</button>
+      <div class="tb-av">王</div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-inner">
+        <div class="hero-left">
+          <div class="hero-hi">Good morning</div>
+          <div class="hero-name">你好，王小明 <em>✦</em></div>
+          <div class="hero-sub">今天有 <strong>2 件必须做</strong> · 1 件建议做</div>
+        </div>
+        <div class="compose-col">
+          <div class="cbox">
+            <i class="ti ti-sparkles cbox-ic"></i>
+            <input class="cinp" id="cinp" placeholder="今天想写什么？输入主题，立即生成文案…" type="text">
+            <button class="cgo" onclick="if(document.getElementById('cinp').value.trim()){window.location.href='postcraft.html?topic='+encodeURIComponent(document.getElementById('cinp').value.trim())}"><i class="ti ti-arrow-right"></i>生成</button>
+          </div>
+          <div class="hints">
+            <span class="hint-lbl">快速开始：</span>
+            <button class="hchip" onclick="fillCompose(this)" ondblclick="window.location.href='postcraft.html?topic='+encodeURIComponent(this.textContent.trim())">防晒误区科普</button>
+            <button class="hchip" onclick="fillCompose(this)" ondblclick="window.location.href='postcraft.html?topic='+encodeURIComponent(this.textContent.trim())">敏感肌护理方案</button>
+            <button class="hchip" onclick="fillCompose(this)" ondblclick="window.location.href='postcraft.html?topic='+encodeURIComponent(this.textContent.trim())">医美恢复期注意事项</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIPELINE -->
+    <div class="pipe-wrap">
+      <div class="pipe-hd">内容流水线</div>
+      <div class="pipe-row">
+        <div class="pipe-stage">
+          <div class="pc warn">
+            <div class="pc-nm">灵感库</div>
+            <div class="pc-n">34</div>
+            <div class="pc-sub">条待转化</div>
+            <div class="pc-pill pill-w">积压偏多</div>
+          </div>
+        </div>
+        <div class="pipe-stage">
+          <div class="pc warn">
+            <div class="pc-nm">草稿</div>
+            <div class="pc-n">21</div>
+            <div class="pc-sub">篇待处理</div>
+            <div class="pc-pill pill-w">积压偏多</div>
+          </div>
+        </div>
+        <div class="pipe-stage">
+          <div class="pc low">
+            <div class="pc-nm">本周排期</div>
+            <div class="pc-n">2</div>
+            <div class="pc-sub">篇已安排</div>
+            <div class="pc-pill pill-l">排期偏少</div>
+          </div>
+        </div>
+        <div class="pipe-stage">
+          <div class="pc">
+            <div class="pc-nm">本月发布</div>
+            <div class="pc-n">8</div>
+            <div class="pc-sub">篇已发出</div>
+            <div class="pc-pill pill-g">正常</div>
+          </div>
+        </div>
+      </div>
+      <div class="diag">
+        <i class="ti ti-alert-triangle"></i>
+        <div class="diag-text">
+          <strong>执行力瓶颈</strong> — 草稿积压 21 篇，但本周仅排期 2 篇。今日优先把已有草稿排出去，暂不建议创建新内容。
+        </div>
+      </div>
+    </div>
+
+    <!-- BODY GRID -->
+    <div class="body-grid">
+
+      <!-- LEFT -->
+      <div class="left-p">
+
+        <!-- TASKS -->
+        <div>
+          <div class="sh">
+            <div class="sh-l">
+              <div class="sh-ic ic-c"><i class="ti ti-list-check"></i></div>
+              <span class="sh-title">今日任务</span>
+            </div>
+          </div>
+
+          <!-- type tabs -->
+          <div class="task-tabs">
+            <button class="ttab on" onclick="filterTasks('all',this)">全部 <span class="cnt">3</span></button>
+            <button class="ttab" onclick="filterTasks('must',this)">必须做 <span class="cnt">2</span></button>
+            <button class="ttab" onclick="filterTasks('sugg',this)">建议做 <span class="cnt">1</span></button>
+          </div>
+
+          <div class="task-list" id="task-list">
+
+            <!-- MUST #1 — 排期任务 (from pipeline diagnosis) -->
+            <div class="task" data-type="must" onclick="toggleTask(this)">
+              <div class="chk"></div>
+              <div class="task-dot" style="background:#D4622D;"></div>
+              <div class="task-body">
+                <div class="task-name">
+                  安排 3 篇内容排期
+                  <span class="type-must">必须做</span>
+                </div>
+                <div class="task-meta">
+                  草稿库 <span class="hi">积压 21 篇</span>，本周仅排了 2 篇 — 由流水线诊断触发
+                </div>
+              </div>
+              <button class="task-dest" onclick="event.stopPropagation()">
+                <i class="ti ti-calendar-event"></i>去排期日历
+              </button>
+            </div>
+
+            <!-- MUST #2 — complete draft (missing CTA) -->
+            <div class="task" data-type="must" onclick="toggleTask(this)">
+              <div class="chk"></div>
+              <div class="task-dot" style="background:#D4622D;"></div>
+              <div class="task-body">
+                <div class="task-name">
+                  完成《28天改善皮肤状态》文案
+                  <span class="type-must">必须做</span>
+                </div>
+                <div class="task-meta">
+                  Hook ✓ · 标题 ✓ · <span class="hi">CTA 缺失</span> — 补齐后即可排期发布
+                </div>
+              </div>
+              <button class="task-dest" onclick="event.stopPropagation()">
+                <i class="ti ti-writing"></i>去草稿库
+              </button>
+            </div>
+
+            <!-- SUGGEST #1 — CTA stock low -->
+            <div class="task sugg" data-type="sugg" onclick="toggleTask(this)">
+              <div class="chk"></div>
+              <div class="task-dot" style="background:var(--khaki);"></div>
+              <div class="task-body">
+                <div class="task-name">
+                  补充 5 条 CTA 素材
+                  <span class="type-sugg">建议做</span>
+                </div>
+                <div class="task-meta">
+                  CTA 库仅 <span class="hi">18 条</span>，低于建议阈值 25 条 — 非紧急，可稍后处理
+                </div>
+              </div>
+              <button class="task-dest" onclick="event.stopPropagation()">
+                <i class="ti ti-sparkles"></i>AI 生成
+              </button>
+            </div>
+
+            <!-- DONE -->
+            <div class="task done" data-type="must" onclick="toggleTask(this)">
+              <div class="chk done"></div>
+              <div class="task-dot" style="background:var(--sage);"></div>
+              <div class="task-body">
+                <div class="task-name">导入夏季护肤爆款拆解</div>
+                <div class="task-meta">已完成 · 2小时前</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PRIORITY CONTENT — driven by diagnosis: complete near-done drafts -->
+        <div>
+          <div class="sh">
+            <div class="sh-l">
+              <div class="sh-ic ic-a"><i class="ti ti-flame"></i></div>
+              <span class="sh-title">优先完成这些草稿</span>
+            </div>
+            <a class="sh-link">草稿库 <i class="ti ti-arrow-right" style="font-size:11px"></i></a>
+          </div>
+          <div class="prio-list">
+
+            <div class="pcard">
+              <div class="pcard-top">
+                <span class="pcard-badge pb-hot">完成度最高</span>
+                <span class="pcard-time">预计 5 分钟</span>
+              </div>
+              <!-- source trail -->
+              <div class="pcard-trail">
+                <span class="trail-node"><span class="trail-tag tr-expl">爆款拆解 #07</span></span>
+                <span class="trail-sep">→</span>
+                <span class="trail-node"><span class="trail-tag tr-faq">高频问题 ×8</span></span>
+                <span class="trail-sep">→</span>
+                <span class="trail-node"><span class="trail-tag tr-hook">Hook 已匹配</span></span>
+              </div>
+              <div class="pcard-title">越懒的人越会变美？反直觉护肤法</div>
+              <div class="pcard-checks">
+                <span class="pck ok"><i class="ti ti-check"></i>Hook</span>
+                <span class="pck ok"><i class="ti ti-check"></i>标题</span>
+                <span class="pck miss"><i class="ti ti-x"></i>CTA 缺失</span>
+              </div>
+              <div class="pcard-foot">
+                <span class="pcard-est"><i class="ti ti-clock"></i>补 CTA 即可排期</span>
+                <span class="pcard-cta">立即补全 <i class="ti ti-arrow-right"></i></span>
+              </div>
+            </div>
+
+            <div class="pcard">
+              <div class="pcard-top">
+                <span class="pcard-badge pb-new">近期新增</span>
+                <span class="pcard-time">预计 15 分钟</span>
+              </div>
+              <div class="pcard-trail">
+                <span class="trail-node"><span class="trail-tag tr-expl">爆款拆解 #07</span></span>
+                <span class="trail-sep">→</span>
+                <span class="trail-node"><span class="trail-tag tr-faq">高频问题 ×5</span></span>
+              </div>
+              <div class="pcard-title">防晒误区大盘点｜你每天都做错的那件事</div>
+              <div class="pcard-checks">
+                <span class="pck ok"><i class="ti ti-check"></i>Hook</span>
+                <span class="pck miss"><i class="ti ti-x"></i>标题待选</span>
+                <span class="pck miss"><i class="ti ti-x"></i>CTA 缺失</span>
+              </div>
+              <div class="pcard-foot">
+                <span class="pcard-est"><i class="ti ti-clock"></i>来自爆款拆解 #07</span>
+                <span class="pcard-cta">AI 补全 <i class="ti ti-sparkles" style="font-size:12px"></i></span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="right-p">
+
+        <!-- CALENDAR -->
+        <div>
+          <div class="sh">
+            <div class="sh-l">
+              <div class="sh-ic ic-s"><i class="ti ti-calendar-event"></i></div>
+              <span class="sh-title">排期日历</span>
+            </div>
+            <a class="sh-link">完整视图 <i class="ti ti-arrow-right" style="font-size:11px"></i></a>
+          </div>
+          <div class="cal-hd">
+            <span class="cal-title" id="cal-ttl"></span>
+            <div class="cal-nav">
+              <button class="cnb" onclick="changeMonth(-1)"><i class="ti ti-chevron-left"></i></button>
+              <button class="cnb" onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></button>
+            </div>
+          </div>
+          <div class="cal-wds">
+            <div class="wd">日</div><div class="wd">一</div><div class="wd">二</div>
+            <div class="wd">三</div><div class="wd">四</div><div class="wd">五</div><div class="wd">六</div>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+          <!-- legend -->
+          <div style="display:flex;gap:12px;margin-top:8px;">
+            <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--taupe);">
+              <div style="width:10px;height:10px;border-radius:2px;background:var(--caramel-l);"></div>今日待发
+            </div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--taupe);">
+              <div style="width:10px;height:10px;border-radius:2px;background:#C8DEC0;"></div>已排期
+            </div>
+          </div>
+        </div>
+
+        <!-- AI RECOMMEND — only shown when pipeline is healthy (currently hidden by state) -->
+        <div>
+          <div class="sh">
+            <div class="sh-l">
+              <div class="sh-ic ic-m"><i class="ti ti-sparkles"></i></div>
+              <span class="sh-title">AI 推荐选题</span>
+            </div>
+          </div>
+          <!-- context note -->
+          <div style="font-size:11px;color:var(--taupe);padding:7px 10px;background:var(--linen);border-radius:var(--r-md);margin-bottom:8px;line-height:1.6;">
+            当前草稿积压，推荐先消化草稿。以下选题可以备用，等草稿库清空后再创作。
+          </div>
+          <div class="ai-list">
+            <div class="ai-item">
+              <div class="ai-num">1</div>
+              <div class="ai-body">
+                <div class="ai-title">防晒误区：你以为在防晒，其实没有</div>
+                <div class="ai-why">
+                  <span><span class="ai-src as-expl">爆款拆解 #07</span> · 近期热点</span>
+                </div>
+              </div>
+            </div>
+            <div class="ai-item">
+              <div class="ai-num">2</div>
+              <div class="ai-body">
+                <div class="ai-title">敏感肌护理：3 步简化护肤流程</div>
+                <div class="ai-why">
+                  <span><span class="ai-src as-faq">高频问题 ×8</span> · 评论区高频</span>
+                </div>
+              </div>
+            </div>
+            <div class="ai-item">
+              <div class="ai-num">3</div>
+              <div class="ai-body">
+                <div class="ai-title">医美恢复期注意事项清单</div>
+                <div class="ai-why">
+                  <span><span class="ai-src as-faq">内容库空白区</span> · 建议补充</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* date */
+const now = new Date();
+const wds = ['周日','周一','周二','周三','周四','周五','周六'];
+document.getElementById('today-date').textContent =
+  `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 · ${wds[now.getDay()]}`;
+
+/* compose hints */
+function fillCompose(el) {
+  document.getElementById('cinp').value = el.textContent.trim();
+  document.getElementById('cinp').focus();
+}
+
+/* task toggle */
+function toggleTask(el) {
+  if (el.classList.contains('done')) {
+    el.classList.remove('done');
+    el.querySelector('.chk').classList.remove('done');
+  } else {
+    el.classList.add('done');
+    el.querySelector('.chk').classList.add('done');
+  }
+}
+
+/* task filter */
+function filterTasks(type, btn) {
+  document.querySelectorAll('.ttab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.task').forEach(t => {
+    if (type === 'all') { t.style.display = ''; return; }
+    t.style.display = (t.dataset.type === type) ? '' : 'none';
+  });
+}
+
+/* calendar */
+const posts = [
+  {d:'2026-6-5',  t:'夏日防晒清单', s:'pending'},
+  {d:'2026-6-7',  t:'租房第一天清洁', s:'sched'},
+  {d:'2026-6-8',  t:'打工人改造前后', s:'sched'},
+  {d:'2026-6-10', t:'越懒的人越会变美', s:'sched'},
+  {d:'2026-6-14', t:'28天皮肤蜕变', s:'sched'},
+  {d:'2026-6-19', t:'防晒误区大盘点', s:'sched'},
+  {d:'2026-6-21', t:'租房清洁指南', s:'sched'},
+  {d:'2026-6-26', t:'敏感肌护理方案', s:'sched'},
+];
+let cy = now.getFullYear(), cm = now.getMonth();
+function renderCal() {
+  document.getElementById('cal-ttl').textContent = `${cy}年${cm+1}月`;
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+  const first = new Date(cy, cm, 1).getDay();
+  const dim   = new Date(cy, cm+1, 0).getDate();
+  const prev  = new Date(cy, cm, 0).getDate();
+  const todayKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+  for (let i = first-1; i >= 0; i--) {
+    const el = document.createElement('div');
+    el.className = 'cd other';
+    el.innerHTML = `<div class="cd-n">${prev-i}</div>`;
+    grid.appendChild(el);
+  }
+  for (let d = 1; d <= dim; d++) {
+    const key = `${cy}-${cm+1}-${d}`;
+    const dp  = posts.filter(p => p.d === key);
+    const el  = document.createElement('div');
+    let cls   = 'cd';
+    if (key === todayKey) cls += ' today';
+    el.className = cls;
+    let html = `<div class="cd-n">${d}</div>`;
+    if (dp.length) {
+      html += '<div class="cd-posts">';
+      dp.slice(0,2).forEach(p => {
+        const s = p.t.length > 7 ? p.t.slice(0,7)+'…' : p.t;
+        html += `<div class="cdp ${p.s === 'sched' ? 's' : ''}">${s}</div>`;
+      });
+      if (dp.length > 2) html += `<div class="cdp" style="background:var(--linen);color:var(--taupe);">+${dp.length-2}</div>`;
+      html += '</div>';
+    }
+    el.innerHTML = html;
+    grid.appendChild(el);
+  }
+  const total = first + dim;
+  const rem   = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let d = 1; d <= rem; d++) {
+    const el = document.createElement('div');
+    el.className = 'cd other';
+    el.innerHTML = `<div class="cd-n">${d}</div>`;
+    grid.appendChild(el);
+  }
+}
+function changeMonth(dir) {
+  cm += dir;
+  if (cm < 0)  { cm = 11; cy--; }
+  if (cm > 11) { cm = 0;  cy++; }
+  renderCal();
+}
+renderCal();
+</script>
+</body>
+</html>

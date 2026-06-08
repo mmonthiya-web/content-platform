@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>排期日历</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{
+  --oyster:#F1ECE1;--pure:#F8F5F0;--linen:#EDE8DF;
+  --khaki:#C3B091;--taupe:#9A8C7E;--mocha:#5C4A3A;--ink:#2E1F14;
+  --caramel:#864C24;--autumn:#643C20;--caramel-l:#E8D5C0;--caramel-ll:#F5EDE3;
+  --sage:#5A7048;--sage-bg:#E6EEE0;--sage-dk:#3E5432;
+  --amber:#7A5518;--amber-bg:#F2E8D0;
+  --red:#C84040;--red-bg:#FCE8E8;
+  --white:#FFFFFF;
+  --border:rgba(163,140,115,.2);--border2:rgba(163,140,115,.11);
+  --r-sm:4px;--r-md:10px;--r-lg:14px;--r-xl:18px;
+  --sb:200px;--top:52px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;}
+body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);height:100vh;overflow:hidden;display:flex;}
+
+/* ══ SIDEBAR ══ */
+.sb{width:var(--sb);flex-shrink:0;background:var(--pure);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;}
+.sb-brand{padding:18px 16px 14px;border-bottom:1px solid var(--border);}
+.sb-logo{font-family:'DM Serif Display',serif;font-size:16px;color:var(--ink);cursor:pointer;}
+.sb-logo em{font-style:italic;color:var(--caramel);}
+.sb-tag{font-size:10px;color:var(--taupe);margin-top:1px;}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 0;}
+.sb-nav::-webkit-scrollbar{width:0;}
+.sbg{margin-bottom:2px;}
+.sbg-lbl{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--khaki);padding:10px 16px 4px;display:flex;align-items:center;gap:6px;}
+.sbg-lbl::after{content:'';flex:1;height:1px;background:var(--border2);}
+.ni{display:flex;align-items:center;gap:9px;padding:7px 14px 7px 16px;font-size:12px;color:var(--taupe);cursor:pointer;border-left:2px solid transparent;transition:all .12s;}
+.ni:hover{color:var(--mocha);background:var(--linen);}
+.ni.on{color:var(--caramel);background:var(--caramel-ll);border-left-color:var(--caramel);font-weight:600;}
+.ni i{font-size:15px;flex-shrink:0;}
+.nb{margin-left:auto;font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;background:var(--linen);color:var(--taupe);}
+.ni.on .nb{background:var(--caramel-l);color:var(--autumn);}
+.sb-foot{padding:10px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:5px;}
+.sb-cta{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r-md);background:var(--caramel);color:var(--oyster);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:background .12s;}
+.sb-cta:hover{background:var(--autumn);}
+.sb-cta i{font-size:14px;}
+.sb-ghost{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:var(--r-md);background:transparent;color:var(--taupe);font-family:'Poppins',sans-serif;font-size:11.5px;cursor:pointer;border:1px solid var(--border);transition:all .12s;}
+.sb-ghost:hover{color:var(--mocha);background:var(--linen);}
+.sb-ghost i{font-size:14px;}
+
+/* ══ MAIN ══ */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+
+/* TOPBAR */
+.topbar{height:var(--top);flex-shrink:0;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:10px;}
+.crumb{display:flex;align-items:center;gap:6px;font-size:13px;}
+.crumb .r{color:var(--taupe);cursor:pointer;transition:color .12s;}
+.crumb .r:hover{color:var(--caramel);}
+.crumb .sep{color:var(--khaki);font-size:11px;}
+.crumb .cur{font-weight:600;color:var(--ink);}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.tbtn{height:32px;padding:0 13px;border-radius:var(--r-md);border:none;font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .12s;}
+.tbtn.g{background:var(--oyster);color:var(--mocha);border:1px solid var(--border);}
+.tbtn.g:hover{background:var(--linen);}
+.tbtn.p{background:var(--caramel);color:var(--oyster);}
+.tbtn.p:hover{background:var(--autumn);}
+.tbtn.on{background:var(--ink);color:var(--oyster);border-color:var(--ink);}
+.tbtn i{font-size:14px;}
+.tb-av{width:30px;height:30px;border-radius:50%;background:var(--caramel-l);color:var(--autumn);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1.5px solid var(--border);}
+
+/* ══ CONTENT ══ */
+.content{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* STAT BAR */
+.stat-bar{background:var(--white);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;gap:10px;flex-shrink:0;}
+.stat-card{flex:1;padding:12px 16px;border-radius:var(--r-lg);border:1px solid var(--border);display:flex;flex-direction:column;gap:3px;}
+.stat-card.accent{background:var(--ink);border-color:var(--ink);}
+.stat-card.accent .sc-n{color:var(--oyster);}
+.stat-card.accent .sc-lbl{color:rgba(241,236,225,.55);}
+.stat-card.accent .sc-sub{color:rgba(241,236,225,.35);}
+.sc-n{font-size:26px;font-weight:700;color:var(--ink);line-height:1;}
+.sc-lbl{font-size:11px;color:var(--taupe);margin-top:2px;}
+.sc-sub{font-size:10px;color:var(--khaki);}
+
+/* CAL CONTROLS */
+.cal-controls{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:10px;height:44px;flex-shrink:0;}
+.cal-nav{display:flex;align-items:center;gap:6px;}
+.cal-nav-btn{width:28px;height:28px;border-radius:var(--r-sm);border:1px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--taupe);transition:all .12s;}
+.cal-nav-btn:hover{background:var(--linen);color:var(--mocha);}
+.cal-nav-btn i{font-size:15px;}
+.cal-month-title{font-size:14px;font-weight:600;color:var(--ink);min-width:110px;text-align:center;}
+.today-btn{height:28px;padding:0 12px;border-radius:var(--r-md);border:1px solid var(--border);background:transparent;font-family:'Poppins',sans-serif;font-size:11.5px;font-weight:500;color:var(--mocha);cursor:pointer;transition:all .12s;}
+.today-btn:hover{background:var(--linen);}
+/* view toggle */
+.view-tog{display:flex;gap:2px;background:var(--linen);border-radius:var(--r-sm);padding:2px;margin-left:auto;}
+.vbtn{height:26px;padding:0 12px;border-radius:4px;border:none;background:transparent;font-family:'Poppins',sans-serif;font-size:11.5px;font-weight:500;color:var(--taupe);cursor:pointer;transition:all .12s;}
+.vbtn.on{background:var(--white);color:var(--ink);font-weight:600;}
+/* pending drafts pill */
+.pending-pill{display:flex;align-items:center;gap:6px;padding:4px 12px;background:var(--caramel-ll);border:1px solid var(--caramel-l);border-radius:20px;font-size:11.5px;color:var(--caramel);cursor:pointer;transition:all .12s;}
+.pending-pill:hover{background:var(--caramel-l);}
+.pending-pill i{font-size:13px;}
+
+/* ══ BODY ══ */
+.body-wrap{flex:1;display:flex;overflow:hidden;position:relative;}
+
+/* ── MONTH VIEW ── */
+.month-view{flex:1;overflow-y:auto;padding:0;display:flex;flex-direction:column;}
+.month-view::-webkit-scrollbar{width:4px;}
+.month-view::-webkit-scrollbar-thumb{background:var(--khaki);border-radius:999px;}
+
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);background:var(--pure);border-bottom:1px solid var(--border);flex-shrink:0;}
+.cal-wd{padding:7px 0;text-align:center;font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--taupe);text-transform:uppercase;}
+.cal-wd.weekend{color:var(--khaki);}
+
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);flex:1;align-content:start;}
+.cal-cell{border-right:1px solid var(--border2);border-bottom:1px solid var(--border2);min-height:110px;padding:6px 7px;cursor:pointer;transition:background .12s;position:relative;}
+.cal-cell:nth-child(7n){border-right:none;}
+.cal-cell:hover{background:var(--linen);}
+.cal-cell.today{background:var(--caramel-ll);}
+.cal-cell.today .day-num{color:var(--caramel);font-weight:700;}
+.cal-cell.other-month{background:var(--pure);}
+.cal-cell.other-month .day-num{color:var(--khaki);}
+.cal-cell.selected{background:var(--caramel-ll);outline:2px solid var(--caramel);outline-offset:-1px;}
+.cal-cell.weekend .day-num{color:var(--taupe);}
+.cal-cell.has-content{background:var(--white);}
+.day-num{font-size:12px;font-weight:500;color:var(--mocha);margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;}
+.day-num-inner{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.cal-cell.today .day-num-inner{background:var(--caramel);color:var(--white);}
+.add-day-btn{width:16px;height:16px;border-radius:50%;background:transparent;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:all .12s;color:var(--taupe);}
+.add-day-btn i{font-size:10px;}
+.cal-cell:hover .add-day-btn{opacity:1;}
+.add-day-btn:hover{background:var(--caramel);border-color:var(--caramel);color:white;}
+/* post pills in cell */
+.post-pills{display:flex;flex-direction:column;gap:2px;}
+.post-pill{font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;transition:opacity .12s;line-height:1.4;}
+.post-pill:hover{opacity:.8;}
+.pp-sched{background:#C8DEC0;color:var(--sage-dk);}
+.pp-today{background:var(--caramel-l);color:var(--autumn);}
+.pp-published{background:var(--linen);color:var(--taupe);}
+.more-pill{font-size:9.5px;color:var(--taupe);padding:1px 4px;cursor:pointer;}
+.more-pill:hover{color:var(--caramel);}
+
+/* ── WEEK VIEW ── */
+.week-view{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.week-header{display:grid;grid-template-columns:48px repeat(7,1fr);background:var(--pure);border-bottom:1px solid var(--border);flex-shrink:0;}
+.wh-gutter{border-right:1px solid var(--border2);}
+.wh-day{padding:8px 6px;text-align:center;border-right:1px solid var(--border2);}
+.wh-day:last-child{border-right:none;}
+.wh-day-n{font-size:11px;font-weight:600;color:var(--taupe);text-transform:uppercase;}
+.wh-day-d{font-size:18px;font-weight:700;color:var(--ink);line-height:1.2;}
+.wh-day.today .wh-day-d{color:var(--caramel);}
+.wh-day.today .wh-day-n{color:var(--caramel);}
+.week-body{flex:1;overflow-y:auto;display:grid;grid-template-columns:48px repeat(7,1fr);}
+.week-body::-webkit-scrollbar{width:4px;}
+.week-body::-webkit-scrollbar-thumb{background:var(--khaki);border-radius:999px;}
+.time-col{display:flex;flex-direction:column;border-right:1px solid var(--border2);}
+.time-slot{height:60px;padding:4px 6px 0;font-size:10px;color:var(--taupe);text-align:right;border-bottom:1px solid var(--border2);flex-shrink:0;}
+.week-day-col{border-right:1px solid var(--border2);position:relative;display:flex;flex-direction:column;}
+.week-day-col:last-child{border-right:none;}
+.week-hour{height:60px;border-bottom:1px solid var(--border2);cursor:pointer;transition:background .12s;flex-shrink:0;}
+.week-hour:hover{background:var(--caramel-ll);}
+.week-event{position:absolute;left:3px;right:3px;border-radius:var(--r-sm);padding:3px 6px;font-size:11px;font-weight:500;cursor:pointer;overflow:hidden;z-index:1;transition:opacity .12s;}
+.week-event:hover{opacity:.85;}
+.we-sched{background:#C8DEC0;color:var(--sage-dk);border-left:3px solid var(--sage);}
+.we-today{background:var(--caramel-l);color:var(--autumn);border-left:3px solid var(--caramel);}
+.we-pub{background:var(--linen);color:var(--taupe);border-left:3px solid var(--khaki);}
+
+/* ══ DETAIL PANEL — sliding drawer ══ */
+.detail-panel{
+  position:absolute;top:0;right:0;bottom:0;width:300px;
+  background:var(--white);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+  transform:translateX(100%);transition:transform .22s ease;
+  z-index:10;box-shadow:-4px 0 20px rgba(46,31,20,.08);
+}
+.detail-panel.open{transform:translateX(0);}
+.dp-head{padding:14px 16px 11px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.dp-date{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px;}
+.dp-sub{font-size:11px;color:var(--taupe);}
+/* upcoming list */
+.dp-body{flex:1;overflow-y:auto;padding:12px 14px;}
+.dp-body::-webkit-scrollbar{width:0;}
+.dp-section{margin-bottom:16px;}
+.dp-sec-lbl{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--taupe);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.dp-sec-lbl::after{content:'';flex:1;height:1px;background:var(--border2);}
+/* schedule item */
+.sched-item{background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:all .12s;}
+.sched-item:hover{border-color:var(--caramel-l);background:var(--caramel-ll);}
+.si-top{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.si-time{font-size:11px;font-weight:600;color:var(--caramel);background:var(--caramel-ll);padding:2px 8px;border-radius:20px;flex-shrink:0;}
+.si-status{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;flex-shrink:0;}
+.sis-sched{background:var(--sage-bg);color:var(--sage-dk);}
+.sis-pub{background:var(--linen);color:var(--taupe);}
+.sis-today{background:var(--caramel-ll);color:var(--caramel);}
+.si-title{font-size:12.5px;font-weight:500;color:var(--ink);line-height:1.4;margin-bottom:4px;}
+.si-meta{display:flex;align-items:center;gap:6px;}
+.si-plat{font-size:10.5px;color:var(--taupe);display:flex;align-items:center;gap:3px;}
+.si-plat i{font-size:12px;}
+.si-cat{font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px;}
+.si-actions{display:flex;gap:5px;margin-top:7px;padding-top:7px;border-top:1px solid var(--border2);}
+.si-act{flex:1;height:26px;border-radius:var(--r-sm);border:1px solid var(--border);background:transparent;font-family:'Poppins',sans-serif;font-size:11px;font-weight:500;color:var(--mocha);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .12s;}
+.si-act:hover{background:var(--linen);}
+.si-act.danger{color:var(--red);border-color:#EDCECE;}
+.si-act.danger:hover{background:var(--red-bg);}
+.si-act i{font-size:12px;}
+/* unscheduled drafts */
+.unsched-item{display:flex;align-items:center;gap:9px;padding:8px 10px;background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:5px;cursor:pointer;transition:all .12s;}
+.unsched-item:hover{background:var(--caramel-ll);border-color:var(--caramel-l);}
+.ui-dot{width:7px;height:7px;border-radius:50%;background:var(--khaki);flex-shrink:0;}
+.ui-title{flex:1;font-size:12px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ui-btn{font-size:10.5px;font-weight:600;color:var(--caramel);flex-shrink:0;cursor:pointer;}
+.ui-btn:hover{color:var(--autumn);}
+/* add event */
+.dp-add-btn{width:100%;height:36px;border-radius:var(--r-md);border:1.5px dashed var(--border);background:transparent;font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;color:var(--taupe);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .12s;margin-top:6px;}
+.dp-add-btn:hover{border-color:var(--caramel);color:var(--caramel);background:var(--caramel-ll);}
+.dp-add-btn i{font-size:14px;}
+
+/* ── QUICK SCHEDULE MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(46,31,20,.4);z-index:200;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:var(--r-xl);padding:22px 24px;width:380px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(46,31,20,.2);}
+.modal-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--ink);margin-bottom:4px;}
+.modal-sub{font-size:12px;color:var(--taupe);margin-bottom:18px;line-height:1.6;}
+.modal-field{margin-bottom:14px;}
+.mf-label{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--taupe);margin-bottom:6px;}
+.mf-inp{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--oyster);font-family:'Poppins',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:all .12s;}
+.mf-inp:focus{border-color:var(--caramel);background:var(--white);}
+.mf-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mf-sel{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--oyster);font-family:'Poppins',sans-serif;font-size:13px;color:var(--ink);outline:none;cursor:pointer;}
+.mf-sel:focus{border-color:var(--caramel);}
+/* draft picker in modal */
+.draft-picker{display:flex;flex-direction:column;gap:5px;max-height:180px;overflow-y:auto;}
+.draft-picker::-webkit-scrollbar{width:0;}
+.dp-opt{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-md);cursor:pointer;transition:all .12s;}
+.dp-opt:hover{background:var(--linen);}
+.dp-opt.on{background:var(--caramel-ll);border-color:var(--caramel);}
+.dp-opt-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.dp-opt.on .dp-opt-check{background:var(--caramel);border-color:var(--caramel);}
+.dp-opt.on .dp-opt-check::after{content:'✓';font-size:9px;color:white;font-weight:700;}
+.dp-opt-title{flex:1;font-size:12px;color:var(--ink);}
+.modal-btns{display:flex;gap:8px;margin-top:18px;}
+.mbtn{flex:1;height:38px;border-radius:var(--r-md);border:none;font-family:'Poppins',sans-serif;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .12s;}
+.mbtn.p{background:var(--caramel);color:var(--oyster);}
+.mbtn.p:hover{background:var(--autumn);}
+.mbtn.g{background:var(--linen);color:var(--mocha);}
+.mbtn.g:hover{background:var(--linen);}
+.mbtn i{font-size:14px;}
+
+/* toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--oyster);font-size:12.5px;font-weight:500;padding:10px 20px;border-radius:var(--r-lg);opacity:0;transition:all .2s;pointer-events:none;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.content{animation:fadeUp .25s ease both;}
+*{scrollbar-width:thin;scrollbar-color:var(--khaki) transparent;}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-brand">
+    <div class="sb-logo" onclick="window.location.href='index.html'"><em>内容</em>平台</div>
+    <div class="sb-tag">小红书运营助手</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sbg">
+      <div class="sbg-lbl">工具</div>
+      <div class="ni" onclick="window.location.href='index.html'"><i class="ti ti-layout-dashboard"></i><span>首页</span></div>
+      <div class="ni" onclick="window.location.href='suzaiku.html'"><i class="ti ti-stack-2"></i><span>素材库</span></div>
+      <div class="ni" onclick="window.location.href='postcraft.html'"><i class="ti ti-writing"></i><span>创作</span></div>
+      <div class="ni on"><i class="ti ti-calendar-event"></i><span>排期</span></div>
+    </div>
+    <div class="sbg">
+      <div class="sbg-lbl">发布中心</div>
+      <div class="ni" onclick="window.location.href='drafts.html'"><i class="ti ti-layout-kanban"></i><span>草稿库</span><span class="nb">21</span></div>
+      <div class="ni on"><i class="ti ti-calendar-event"></i><span>排期日历</span></div>
+      <div class="ni"><i class="ti ti-circle-check"></i><span>发布记录</span></div>
+    </div>
+  </div>
+  <div class="sb-foot">
+    <button class="sb-cta" onclick="openModal(null)"><i class="ti ti-plus"></i>新建排期</button>
+    <button class="sb-ghost" onclick="window.location.href='drafts.html'"><i class="ti ti-layout-kanban"></i>草稿库</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="crumb">
+      <span class="r" onclick="window.location.href='index.html'">首页</span>
+      <span class="sep">›</span>
+      <span class="cur">排期日历</span>
+    </div>
+    <div class="tb-r">
+      <div class="pending-pill" onclick="window.location.href='drafts.html'">
+        <i class="ti ti-layout-kanban"></i>
+        <span id="pending-count">19 篇草稿待排期</span>
+      </div>
+      <button class="tbtn p" onclick="openModal(null)"><i class="ti ti-plus"></i>新建排期</button>
+      <div class="tb-av">王</div>
+    </div>
+  </header>
+
+  <div class="content">
+    <!-- STAT BAR -->
+    <div class="stat-bar">
+      <div class="stat-card">
+        <div class="sc-n" id="st-published">8</div>
+        <div class="sc-lbl">本月已发布</div>
+        <div class="sc-sub">篇内容</div>
+      </div>
+      <div class="stat-card accent">
+        <div class="sc-n" id="st-scheduled">2</div>
+        <div class="sc-lbl">本月待发布</div>
+        <div class="sc-sub">已排期</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-n" id="st-total">10</div>
+        <div class="sc-lbl">本月总计</div>
+        <div class="sc-sub">篇内容</div>
+      </div>
+    </div>
+
+    <!-- CAL CONTROLS -->
+    <div class="cal-controls">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="changeMonth(-1)"><i class="ti ti-chevron-left"></i></button>
+        <span class="cal-month-title" id="cal-title"></span>
+        <button class="cal-nav-btn" onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></button>
+      </div>
+      <button class="today-btn" onclick="goToday()">今天</button>
+      <div class="view-tog">
+        <button class="vbtn on" id="vbtn-month" onclick="setView('month',this)">月</button>
+        <button class="vbtn" id="vbtn-week" onclick="setView('week',this)">周</button>
+      </div>
+    </div>
+
+    <div class="body-wrap">
+      <!-- MONTH VIEW -->
+      <div id="view-month" style="display:flex;flex-direction:column;flex:1;overflow:hidden;width:100%;">
+        <div class="month-view" id="month-view">
+          <div class="cal-weekdays">
+            <div class="cal-wd weekend">日</div>
+            <div class="cal-wd">一</div><div class="cal-wd">二</div>
+            <div class="cal-wd">三</div><div class="cal-wd">四</div>
+            <div class="cal-wd">五</div>
+            <div class="cal-wd weekend">六</div>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+      </div>
+
+      <!-- WEEK VIEW -->
+      <div id="view-week" style="display:none;flex-direction:column;flex:1;overflow:hidden;width:100%;">
+        <div class="week-view" id="week-view">
+          <div class="week-header" id="week-header"></div>
+          <div class="week-body" id="week-body"></div>
+        </div>
+      </div>
+
+      <!-- DETAIL PANEL -->
+      <div class="detail-panel" id="dp-detail-panel">
+        <div class="dp-head" style="display:flex;align-items:flex-start;justify-content:space-between;">
+          <div>
+            <div class="dp-date" id="dp-date">本月排期</div>
+            <div class="dp-sub" id="dp-sub">点击日期查看当日内容</div>
+          </div>
+          <button onclick="closeDrawer()" style="width:24px;height:24px;border-radius:var(--r-sm);border:none;background:var(--linen);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--taupe);flex-shrink:0;margin-top:2px;"><i class="ti ti-x" style="font-size:14px;"></i></button>
+        </div>
+        <div class="dp-body" id="dp-body"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER BACKDROP -->
+<div id="drawer-backdrop" onclick="closeDrawer()" style="display:none;position:fixed;inset:0;z-index:9;background:rgba(46,31,20,.18);"></div>
+
+<!-- QUICK SCHEDULE MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="e => e.target===this && closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">新建排期</div>
+    <div class="modal-sub">选择一篇草稿，设定发布时间</div>
+
+    <div class="modal-field">
+      <div class="mf-label">选择草稿</div>
+      <div class="draft-picker" id="modal-draft-picker"></div>
+    </div>
+
+    <div class="modal-field">
+      <div class="mf-label">发布日期</div>
+      <input class="mf-inp" type="date" id="modal-date">
+    </div>
+
+    <div class="modal-field">
+      <div class="mf-label">发布时间</div>
+      <div class="mf-row">
+        <select class="mf-sel" id="modal-hour">
+          <option value="">选择小时</option>
+          <option>07</option><option>08</option><option>09</option><option>10</option>
+          <option>11</option><option>12</option><option>13</option><option>14</option>
+          <option>15</option><option>16</option><option>17</option><option>18</option>
+          <option>19</option><option>20</option><option>21</option><option>22</option>
+        </select>
+        <select class="mf-sel" id="modal-min">
+          <option value="00">00 分</option>
+          <option value="15">15 分</option>
+          <option value="30">30 分</option>
+          <option value="45">45 分</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-btns">
+      <button class="mbtn g" onclick="closeModal()">取消</button>
+      <button class="mbtn p" onclick="confirmSchedule()"><i class="ti ti-calendar-event"></i>确认排期</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══ DATA ═══ */
+const DRAFTS = [
+  {id:1,title:'🧴 The Ordinary 果酸水保姆级使用指南',status:'draft',cats:['skincare'],platform:'xhs'},
+  {id:2,title:'越懒的人皮肤越好？反直觉护肤法',status:'draft',cats:['skincare'],platform:'xhs'},
+  {id:3,title:'🌞 防晒误区大盘点！你每天都做错的那件事',status:'scheduled',cats:['skincare'],platform:'xhs'},
+  {id:4,title:'新加坡超平价好物分享 🛒',status:'draft',cats:['lifestyle'],platform:'xhs'},
+  {id:5,title:'28天皮肤蜕变计划：油痘肌到哑光肌全过程',status:'published',cats:['skincare'],platform:'xhs'},
+  {id:6,title:'敏感肌选防晒指南：4个关键指标',status:'draft',cats:['skincare'],platform:'xhs'},
+  {id:7,title:'📱 我的桌面收纳好物清单',status:'draft',cats:['lifestyle'],platform:'xhs'},
+  {id:8,title:'新加坡周末去哪里？5个打卡地',status:'scheduled',cats:['travel'],platform:'xhs'},
+];
+
+const CAT_COLORS = {skincare:['#ECE8F5','#5340A0'],lifestyle:['#E6EEE0','#3E5432'],travel:['#E8EEF5','#2A5080'],food:['#F2E8D0','#7A5518']};
+
+// scheduled posts with real dates
+let POSTS = [
+  {id:101,draftId:3,title:'🌞 防晒误区大盘点！你每天都做错的那件事',date:'2026-6-5',time:'10:00',status:'today',platform:'xhs',cats:['skincare']},
+  {id:102,draftId:8,title:'新加坡周末去哪里？5个打卡地',date:'2026-6-7',time:'09:00',status:'scheduled',platform:'xhs',cats:['travel']},
+  {id:103,draftId:null,title:'打工人位改造前后对比｜全部好物清单上',date:'2026-6-8',time:'12:00',status:'scheduled',platform:'xhs',cats:['lifestyle']},
+  {id:104,draftId:null,title:'越懒的人皮肤越好？反直觉护肤法',date:'2026-6-10',time:'10:00',status:'scheduled',platform:'xhs',cats:['skincare']},
+  {id:105,draftId:null,title:'28天皮肤蜕变计划：油痘肌到哑光肌',date:'2026-6-14',time:'09:30',status:'scheduled',platform:'xhs',cats:['skincare']},
+  {id:106,draftId:null,title:'防晒误区大盘点',date:'2026-6-19',time:'11:00',status:'scheduled',platform:'xhs',cats:['skincare']},
+  {id:107,draftId:null,title:'租房第一天入住清洁指南',date:'2026-6-21',time:'10:00',status:'scheduled',platform:'xhs',cats:['lifestyle']},
+  {id:108,draftId:null,title:'敏感肌护理方案',date:'2026-6-26',time:'14:00',status:'scheduled',platform:'xhs',cats:['skincare']},
+  // published
+  {id:90,draftId:5,title:'28天皮肤蜕变计划（第一期）',date:'2026-6-1',time:'09:00',status:'published',platform:'xhs',cats:['skincare']},
+  {id:91,draftId:null,title:'新加坡好物 May 月回顾',date:'2026-5-28',time:'10:00',status:'published',platform:'xhs',cats:['lifestyle']},
+];
+
+const now = new Date();
+let calYear = now.getFullYear();
+let calMonth = now.getMonth();
+let curView = 'month';
+let selDate = null; // selected date string 'YYYY-M-D'
+let modalDraftId = null;
+let modalPresetDate = null;
+let weekOffset = 0; // weeks from current week
+
+/* ═══ INIT ═══ */
+renderCalTitle();
+renderMonth();
+updateStats();
+
+/* ═══ STATS ═══ */
+function updateStats() {
+  const inMonth = POSTS.filter(p => {
+    const d = new Date(p.date);
+    return d.getFullYear() === calYear && d.getMonth() === calMonth;
+  });
+  const pub = inMonth.filter(p => p.status === 'published').length;
+  const sched = inMonth.filter(p => p.status === 'scheduled' || p.status === 'today').length;
+  document.getElementById('st-published').textContent = pub;
+  document.getElementById('st-scheduled').textContent = sched;
+  document.getElementById('st-total').textContent = pub + sched;
+  const unscheduled = DRAFTS.filter(d => d.status === 'draft').length;
+  document.getElementById('pending-count').textContent = unscheduled + ' 篇草稿待排期';
+}
+
+/* ═══ CALENDAR TITLE ═══ */
+function renderCalTitle() {
+  document.getElementById('cal-title').textContent = `${calYear}年${calMonth+1}月`;
+}
+
+/* ═══ MONTH VIEW ═══ */
+function renderMonth() {
+  renderCalTitle();
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  const firstDay  = new Date(calYear, calMonth, 1).getDay();
+  const daysInMon = new Date(calYear, calMonth+1, 0).getDate();
+  const prevDays  = new Date(calYear, calMonth, 0).getDate();
+  const todayKey  = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+
+  // prev month padding
+  for (let i = firstDay-1; i >= 0; i--) {
+    const cell = makeCell(prevDays-i, 'other-month prev', null);
+    grid.appendChild(cell);
+  }
+
+  // current month
+  for (let d = 1; d <= daysInMon; d++) {
+    const key = `${calYear}-${calMonth+1}-${d}`;
+    const posts = getPostsForDate(key);
+    const isToday = key === todayKey;
+    const isWeekend = [0,6].includes(new Date(calYear,calMonth,d).getDay());
+    let cls = isToday ? 'today' : '';
+    if (isWeekend) cls += ' weekend';
+    if (posts.length) cls += ' has-content';
+    if (key === selDate) cls += ' selected';
+
+    const cell = makeCell(d, cls.trim(), key, posts, isToday);
+    cell.onclick = () => selectDate(key);
+    grid.appendChild(cell);
+  }
+
+  // next month padding
+  const total = firstDay + daysInMon;
+  const rem = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let d = 1; d <= rem; d++) {
+    const cell = makeCell(d, 'other-month', null);
+    grid.appendChild(cell);
+  }
+}
+
+function makeCell(day, cls, dateKey, posts=[], isToday=false) {
+  const cell = document.createElement('div');
+  cell.className = 'cal-cell ' + cls;
+
+  const dnInner = `<div class="day-num-inner">${day}</div>`;
+  const addBtn = dateKey ? `<button class="add-day-btn" onclick="event.stopPropagation();openModal('${dateKey}')"><i class="ti ti-plus"></i></button>` : '';
+  cell.innerHTML = `<div class="day-num">${dnInner}${addBtn}</div>`;
+
+  if (posts.length) {
+    const pillsWrap = document.createElement('div');
+    pillsWrap.className = 'post-pills';
+    posts.slice(0,3).forEach(p => {
+      const pill = document.createElement('div');
+      const pcls = p.status === 'published' ? 'pp-published' : p.status === 'today' ? 'pp-today' : 'pp-sched';
+      pill.className = `post-pill ${pcls}`;
+      pill.textContent = p.time + ' ' + p.title;
+      pill.title = p.title;
+      pill.onclick = e => { e.stopPropagation(); selectDate(dateKey); };
+      pillsWrap.appendChild(pill);
+    });
+    if (posts.length > 3) {
+      const more = document.createElement('div');
+      more.className = 'more-pill';
+      more.textContent = `+${posts.length-3} 篇`;
+      pillsWrap.appendChild(more);
+    }
+    cell.appendChild(pillsWrap);
+  }
+  return cell;
+}
+
+function getPostsForDate(key) {
+  return POSTS.filter(p => {
+    const d = new Date(p.date);
+    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}` === key;
+  }).sort((a,b) => a.time.localeCompare(b.time));
+}
+
+/* ═══ WEEK VIEW ═══ */
+function renderWeek() {
+  const today = new Date();
+  const startOfWeek = new Date(today);
+  startOfWeek.setDate(today.getDate() - today.getDay() + weekOffset * 7);
+
+  // header
+  const header = document.getElementById('week-header');
+  header.innerHTML = '<div class="wh-gutter"></div>';
+  const days = ['日','一','二','三','四','五','六'];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(startOfWeek); d.setDate(startOfWeek.getDate() + i);
+    const isToday = d.toDateString() === today.toDateString();
+    const div = document.createElement('div');
+    div.className = 'wh-day' + (isToday ? ' today' : '');
+    div.innerHTML = `<div class="wh-day-n">${days[i]}</div><div class="wh-day-d">${d.getDate()}</div>`;
+    header.appendChild(div);
+  }
+
+  // body
+  const body = document.getElementById('week-body');
+  body.innerHTML = '';
+  // time col
+  const timeCol = document.createElement('div');
+  timeCol.className = 'time-col';
+  for (let h = 7; h <= 22; h++) {
+    const slot = document.createElement('div');
+    slot.className = 'time-slot';
+    slot.textContent = h + ':00';
+    timeCol.appendChild(slot);
+  }
+  body.appendChild(timeCol);
+
+  // day cols
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(startOfWeek); d.setDate(startOfWeek.getDate() + i);
+    const key = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    const dayPosts = getPostsForDate(key);
+
+    const col = document.createElement('div');
+    col.className = 'week-day-col';
+    for (let h = 7; h <= 22; h++) {
+      const hour = document.createElement('div');
+      hour.className = 'week-hour';
+      hour.onclick = () => openModal(key);
+      col.appendChild(hour);
+    }
+    // add events
+    dayPosts.forEach(p => {
+      const [hh, mm] = p.time.split(':').map(Number);
+      if (hh < 7 || hh > 22) return;
+      const topPct = ((hh - 7) * 60 + mm) / ((22-7)*60) * 100;
+      const ev = document.createElement('div');
+      const ecls = p.status === 'published' ? 'we-pub' : p.status === 'today' ? 'we-today' : 'we-sched';
+      ev.className = `week-event ${ecls}`;
+      ev.style.top = topPct + '%';
+      ev.style.height = '52px';
+      ev.innerHTML = `<div style="font-size:10px;opacity:.7;">${p.time}</div><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.title}</div>`;
+      ev.onclick = e => { e.stopPropagation(); selectDate(key); };
+      col.appendChild(ev);
+    });
+    body.appendChild(col);
+  }
+}
+
+/* ═══ SELECT DATE ═══ */
+function selectDate(key) {
+  selDate = key;
+  renderMonth();
+  renderDetailPanel(key);
+  openDrawer();
+}
+function openDrawer() {
+  document.getElementById('dp-detail-panel').classList.add('open');
+  document.getElementById('drawer-backdrop').style.display = '';
+}
+function closeDrawer() {
+  document.getElementById('dp-detail-panel').classList.remove('open');
+  document.getElementById('drawer-backdrop').style.display = 'none';
+  selDate = null;
+  renderMonth();
+}
+
+/* ═══ DETAIL PANEL ═══ */
+function renderDetailPanel(dateKey) {
+  const body = document.getElementById('dp-body');
+  const dateEl = document.getElementById('dp-date');
+  const subEl = document.getElementById('dp-sub');
+  body.innerHTML = '';
+
+  if (!dateKey) {
+    // show month overview
+    dateEl.textContent = `${calYear}年${calMonth+1}月`;
+    subEl.textContent = '本月排期总览';
+    renderMonthOverview(body);
+    return;
+  }
+
+  const d = new Date(dateKey);
+  const weekdays = ['周日','周一','周二','周三','周四','周五','周六'];
+  dateEl.textContent = `${d.getMonth()+1}月${d.getDate()}日 · ${weekdays[d.getDay()]}`;
+  const posts = getPostsForDate(dateKey);
+  subEl.textContent = posts.length ? `${posts.length} 篇内容` : '暂无排期内容';
+
+  if (posts.length) {
+    const sec = document.createElement('div');
+    sec.className = 'dp-section';
+    sec.innerHTML = '<div class="dp-sec-lbl">当日排期</div>';
+    posts.forEach(p => sec.appendChild(makeSchedItem(p)));
+    body.appendChild(sec);
+  }
+
+  // add button
+  const addBtn = document.createElement('button');
+  addBtn.className = 'dp-add-btn';
+  addBtn.innerHTML = '<i class="ti ti-plus"></i>为这天新增排期';
+  addBtn.onclick = () => openModal(dateKey);
+  body.appendChild(addBtn);
+
+  // unscheduled drafts
+  const unsched = DRAFTS.filter(d => d.status === 'draft');
+  if (unsched.length) {
+    const sec2 = document.createElement('div');
+    sec2.className = 'dp-section';
+    sec2.innerHTML = `<div class="dp-sec-lbl">待排期草稿 (${unsched.length})</div>`;
+    unsched.slice(0,4).forEach(dr => {
+      const item = document.createElement('div');
+      item.className = 'unsched-item';
+      item.innerHTML = `<div class="ui-dot"></div><div class="ui-title">${dr.title}</div><span class="ui-btn" onclick="quickScheduleDraft(${dr.id},'${dateKey}')">排到这天</span>`;
+      sec2.appendChild(item);
+    });
+    body.appendChild(sec2);
+  }
+}
+
+function renderMonthOverview(body) {
+  // upcoming scheduled
+  const upcoming = POSTS
+    .filter(p => p.status === 'scheduled' || p.status === 'today')
+    .filter(p => { const d=new Date(p.date); return d.getFullYear()===calYear&&d.getMonth()===calMonth; })
+    .sort((a,b) => new Date(a.date)-new Date(b.date));
+
+  if (upcoming.length) {
+    const sec = document.createElement('div');
+    sec.className = 'dp-section';
+    sec.innerHTML = `<div class="dp-sec-lbl">本月排期 (${upcoming.length})</div>`;
+    upcoming.forEach(p => sec.appendChild(makeSchedItem(p)));
+    body.appendChild(sec);
+  }
+
+  // unscheduled drafts
+  const unsched = DRAFTS.filter(d => d.status === 'draft');
+  if (unsched.length) {
+    const sec2 = document.createElement('div');
+    sec2.className = 'dp-section';
+    sec2.innerHTML = `<div class="dp-sec-lbl">待排期 (${unsched.length})</div>`;
+    unsched.forEach(dr => {
+      const item = document.createElement('div');
+      item.className = 'unsched-item';
+      item.innerHTML = `<div class="ui-dot"></div><div class="ui-title">${dr.title}</div><span class="ui-btn" onclick="openModalForDraft(${dr.id})">排期 →</span>`;
+      sec2.appendChild(item);
+    });
+    body.appendChild(sec2);
+  }
+
+  const addBtn = document.createElement('button');
+  addBtn.className = 'dp-add-btn';
+  addBtn.innerHTML = '<i class="ti ti-plus"></i>新建排期';
+  addBtn.onclick = () => openModal(null);
+  body.appendChild(addBtn);
+}
+
+function makeSchedItem(p) {
+  const item = document.createElement('div');
+  item.className = 'sched-item';
+  const statusMap = {scheduled:'已排期',today:'今天发布',published:'已发布'};
+  const statusCls = {scheduled:'sis-sched',today:'sis-today',published:'sis-pub'};
+  const cats = (p.cats||[]).map(c => { const col=CAT_COLORS[c]; return col?`<span class="si-cat" style="background:${col[0]};color:${col[1]};">${c}</span>`:''; }).join('');
+  item.innerHTML = `
+    <div class="si-top">
+      <span class="si-time">${p.time}</span>
+      <span class="si-status ${statusCls[p.status]||'sis-sched'}">${statusMap[p.status]||p.status}</span>
+    </div>
+    <div class="si-title">${p.title}</div>
+    <div class="si-meta">
+      <span class="si-plat"><i class="ti ti-brand-instagram"></i>小红书</span>
+      ${cats}
+    </div>
+    ${p.status!=='published'?`
+    <div class="si-actions">
+      <button class="si-act" onclick="editPost(${p.id})"><i class="ti ti-edit"></i>编辑</button>
+      <button class="si-act" onclick="reschedulePost(${p.id})"><i class="ti ti-clock"></i>改期</button>
+      <button class="si-act danger" onclick="removePost(${p.id})"><i class="ti ti-x"></i>取消排期</button>
+    </div>`:''}`;
+  return item;
+}
+
+/* ═══ MODAL ═══ */
+function openModal(dateKey) {
+  modalPresetDate = dateKey;
+  modalDraftId = null;
+
+  // populate draft picker
+  const picker = document.getElementById('modal-draft-picker');
+  picker.innerHTML = '';
+  const available = DRAFTS.filter(d => d.status === 'draft' || d.status === 'scheduled');
+  available.forEach(dr => {
+    const opt = document.createElement('div');
+    opt.className = 'dp-opt';
+    opt.dataset.id = dr.id;
+    opt.innerHTML = `<div class="dp-opt-check"></div><div class="dp-opt-title">${dr.title}</div>`;
+    opt.onclick = () => {
+      picker.querySelectorAll('.dp-opt').forEach(o => o.classList.remove('on'));
+      opt.classList.add('on');
+      modalDraftId = dr.id;
+    };
+    picker.appendChild(opt);
+  });
+
+  // preset date
+  const dateInp = document.getElementById('modal-date');
+  if (dateKey) {
+    const [y,m,d] = dateKey.split('-').map(Number);
+    dateInp.value = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  } else {
+    dateInp.value = '';
+  }
+  document.getElementById('modal-hour').value = '10';
+  document.getElementById('modal-min').value = '00';
+
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function openModalForDraft(draftId) {
+  openModal(null);
+  setTimeout(() => {
+    const picker = document.getElementById('modal-draft-picker');
+    const opt = picker.querySelector(`[data-id="${draftId}"]`);
+    if (opt) { opt.click(); opt.scrollIntoView({block:'nearest'}); }
+  }, 50);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function confirmSchedule() {
+  const dateVal = document.getElementById('modal-date').value;
+  const hour = document.getElementById('modal-hour').value;
+  const min  = document.getElementById('modal-min').value;
+
+  if (!dateVal) { showToast('请选择发布日期'); return; }
+  if (!hour) { showToast('请选择发布时间'); return; }
+
+  const [y,m,d] = dateVal.split('-').map(Number);
+  const key = `${y}-${m}-${d}`;
+  const todayKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+
+  let title = '新内容';
+  if (modalDraftId) {
+    const dr = DRAFTS.find(x => x.id === modalDraftId);
+    if (dr) { dr.status = 'scheduled'; title = dr.title; }
+  }
+
+  const newPost = {
+    id: Date.now(), draftId: modalDraftId,
+    title, date: key, time: `${hour}:${min}`,
+    status: key === todayKey ? 'today' : 'scheduled',
+    platform: 'xhs', cats: []
+  };
+  if (modalDraftId) {
+    const dr = DRAFTS.find(x => x.id === modalDraftId);
+    if (dr) newPost.cats = dr.cats;
+  }
+  POSTS.push(newPost);
+
+  closeModal();
+  selDate = key;
+  updateStats();
+  renderMonth();
+  renderDetailPanel(key);
+  openDrawer();
+  showToast('排期已设置 ✓');
+}
+
+function quickScheduleDraft(draftId, dateKey) {
+  const dr = DRAFTS.find(x => x.id === draftId);
+  if (!dr) return;
+  const todayKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+  const newPost = {
+    id: Date.now(), draftId,
+    title: dr.title, date: dateKey, time: '10:00',
+    status: dateKey === todayKey ? 'today' : 'scheduled',
+    platform: dr.platform, cats: dr.cats
+  };
+  POSTS.push(newPost);
+  dr.status = 'scheduled';
+  updateStats(); renderMonth(); renderDetailPanel(dateKey); openDrawer();
+  showToast(`已排期到 ${dateKey.split('-').slice(1).join('/')} ✓`);
+}
+
+function removePost(id) {
+  const p = POSTS.find(x => x.id === id);
+  if (p && p.draftId) {
+    const dr = DRAFTS.find(x => x.id === p.draftId);
+    if (dr) dr.status = 'draft';
+  }
+  POSTS = POSTS.filter(x => x.id !== id);
+  const wasOpen = document.getElementById('dp-detail-panel').classList.contains('open');
+  updateStats(); renderMonth();
+  if (wasOpen && selDate) { renderDetailPanel(selDate); } else { closeDrawer(); }
+  showToast('已取消排期');
+}
+function editPost(id) { showToast('跳转到草稿编辑…'); window.location.href = 'drafts.html'; }
+function reschedulePost(id) {
+  const p = POSTS.find(x => x.id === id);
+  if (!p) return;
+  openModal(null);
+  setTimeout(() => {
+    if (p.draftId) {
+      const picker = document.getElementById('modal-draft-picker');
+      const opt = picker.querySelector(`[data-id="${p.draftId}"]`);
+      if (opt) opt.click();
+    }
+    const [y,m,d] = p.date.split('-').map(Number);
+    document.getElementById('modal-date').value = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    document.getElementById('modal-hour').value = p.time.split(':')[0];
+    document.getElementById('modal-min').value = p.time.split(':')[1];
+    removePost(id);
+  }, 50);
+}
+
+/* ═══ NAVIGATION ═══ */
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0;  calYear++; }
+  selDate = null;
+  renderMonth();
+  renderDetailPanel(null);
+  updateStats();
+}
+function goToday() {
+  calYear = now.getFullYear(); calMonth = now.getMonth();
+  weekOffset = 0;
+  selDate = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+  renderMonth(); renderWeek();
+  renderDetailPanel(selDate);
+  updateStats();
+}
+function setView(v, btn) {
+  curView = v;
+  document.querySelectorAll('.vbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('view-month').style.display = v === 'month' ? 'flex' : 'none';
+  document.getElementById('view-week').style.display  = v === 'week'  ? 'flex' : 'none';
+  if (v === 'week') renderWeek();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg;
+  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>
