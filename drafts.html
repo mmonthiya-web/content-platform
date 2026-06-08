@@ -514,7 +514,7 @@ function onStoreReady() {
 }
 
 /* ═══ CATEGORY CHIPS ═══ */
-function buildCatChips() {
+async function buildCatChips() {
   const con = document.getElementById('cat-chips');
   while (con.children.length > 1) con.removeChild(con.lastChild);
   CATS.forEach(c => {
@@ -537,7 +537,7 @@ function buildCatChips() {
 
   // 右键分类标签 → 删除
   con.querySelectorAll('.cchip[data-cat]').forEach(btn => {
-    btn.addEventListener('contextmenu', e => {
+    btn.addEventListener('contextmenu', async e => {
       e.preventDefault();
       const id = btn.dataset.cat;
       const cat = CATS.find(c => c.id === id);
@@ -901,7 +901,7 @@ function showToast(msg) {
   const el = document.getElementById('nav-avatar');
   if(el) el.textContent = n[0] || '?';
 })();
-function editUserName(){
+async function editUserName(){
   const cur = Store.getUserName();
   const n = prompt('请输入你的名字：', cur);
   if(n && n.trim()) {
