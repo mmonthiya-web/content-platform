@@ -261,6 +261,148 @@ const Store = (() => {
     if (_channel) _channel.onmessage = e => fn(e.data.event);
   }
 
+  /* ══════════════ 草稿分类 CRUD ══════════════ */
+
+  const DEFAULT_CATS = [
+    {id:'xhs',      label:'小红书', color:'#F5E4D5', text:'#864C24'},
+    {id:'lifestyle', label:'生活方式',color:'#E6EEE0', text:'#3E5432'},
+    {id:'skincare',  label:'护肤',   color:'#ECE8F5', text:'#5340A0'},
+    {id:'food',      label:'美食',   color:'#F2E8D0', text:'#7A5518'},
+    {id:'travel',    label:'旅行',   color:'#E8EEF5', text:'#2A5080'},
+    {id:'fashion',   label:'穿搭',   color:'#F5EBF0', text:'#803060'},
+  ];
+
+  const CATS_KEY = 'cp_cats';
+
+  function getCats() {
+    return _get(CATS_KEY) || DEFAULT_CATS;
+  }
+
+  function saveCats(cats) {
+    _set(CATS_KEY, cats);
+    _dispatch('cats-updated');
+  }
+
+  function addCat({ label, color, text }) {
+    const cats = getCats();
+    // id = 小写拼音/英文，去重
+    const id = 'cat_' + Date.now();
+    cats.push({ id, label, color: color || '#E8EEF5', text: text || '#2A5080' });
+    saveCats(cats);
+    return id;
+  }
+
+  function deleteCat(id) {
+    const cats = getCats().filter(c => c.id !== id);
+    saveCats(cats);
+    // 同时把草稿里用到这个分类的条目移除该分类
+    const drafts = getDrafts().map(d => ({
+      ...d,
+      cats: (d.cats || []).filter(c => c !== id),
+    }));
+    saveDrafts(drafts);
+  }
+
+  /* ══════════════ 爆款拆解导入 ══════════════ */
+
+  /**
+   * 导入一条爆款拆解 JSON，同时提取素材入库
+   * JSON 格式（来自 Claude 分析）：
+   * {
+   *   title, url?, date?, summary?,
+   *   hook, hookType?, hookTrigger?,
+   *   titleFormula?, titleExample?,
+   *   cta?, ctaTarget?,
+   *   keywords?: [],
+   *   tips?: [],
+   *   xtags?: [],
+   * }
+   */
+  function importBreakdown(raw) {
+    // 支持数组或单对象
+    const list = Array.isArray(raw) ? raw : [raw];
+    const newItems = [];
+    const newBDs = [];
+
+    list.forEach(bd => {
+      if (!bd.title) return;
+
+      const bdId = Date.now() + Math.random();
+      const dateStr = bd.date || new Date().toISOString().slice(0, 10);
+
+      // 存入爆款拆解库
+      const bdEntry = {
+        id: bdId,
+        title: bd.title,
+        url: bd.url || '',
+        date: dateStr,
+        likes: bd.likes || 0,
+        saves: bd.saves || 0,
+        summary: bd.summary || '',
+        hook: bd.hook || '',
+        hookType: bd.hookType || '',
+        hookTrigger: bd.hookTrigger || '',
+        formula: bd.titleFormula || '',
+        formulaExample: bd.titleExample || '',
+        cta: bd.cta || '',
+        ctaTarget: bd.ctaTarget || '',
+        tips: bd.tips || [],
+        xtags: bd.xtags || bd.keywords || [],
+      };
+      newBDs.push(bdEntry);
+
+      const src = [`爆款拆解·${bd.title.slice(0, 10)}`];
+
+      // 提取 Hook → 素材库
+      if (bd.hook) newItems.push({
+        id: Date.now() + Math.random(),
+        type: 'hook', status: 'unused',
+        title: bd.hook,
+        body: bd.hookTrigger ? `触发原因：${bd.hookTrigger}` : '',
+        source: src, date: dateStr,
+      });
+
+      // 提取标题公式 → 素材库
+      if (bd.titleFormula) newItems.push({
+        id: Date.now() + Math.random(),
+        type: 'title', status: 'unused',
+        title: bd.titleFormula,
+        body: bd.titleExample || '',
+        source: src, date: dateStr,
+      });
+
+      // 提取 CTA → 素材库
+      if (bd.cta) newItems.push({
+        id: Date.now() + Math.random(),
+        type: 'cta', status: 'unused',
+        title: bd.cta,
+        body: bd.ctaTarget ? `目标：${bd.ctaTarget}` : '',
+        source: src, date: dateStr,
+      });
+
+      // 提取 summary → 灵感
+      if (bd.summary) newItems.push({
+        id: Date.now() + Math.random(),
+        type: 'inspire', status: 'unused',
+        title: bd.title,
+        body: bd.summary,
+        source: src, date: dateStr,
+      });
+    });
+
+    // 合并存入
+    const allBDs = [...getBreakdowns(), ...newBDs];
+    saveBreakdowns(allBDs);
+
+    const allItems = [...getSuzai(), ...newItems];
+    saveSuzai(allItems);
+
+    _dispatch('breakdown-updated');
+    _dispatch('suzai-updated');
+
+    return { bdCount: newBDs.length, itemCount: newItems.length };
+  }
+
   /* ── 公开 API ── */
   return {
     init,
@@ -273,6 +415,10 @@ const Store = (() => {
     getSuzai, saveSuzai, addSuzaiItem,
     // 爆款拆解
     getBreakdowns, saveBreakdowns,
+    // 导入
+    importBreakdown,
+    // 分类
+    getCats, saveCats, addCat, deleteCat,
     // 用户
     getUserName, setUserName,
     getBrandContext, setBrandContext,
