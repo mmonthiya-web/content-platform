@@ -182,20 +182,19 @@ const Store = (() => {
   /* ══════════════ 初始化 ══════════════ */
 
   async function init() {
-    // 用缓存先渲染（页面秒开）
-    // 然后从 Supabase 拉最新数据更新缓存
     const rows = await _sb('GET', 'drafts', null, '?order=id.desc');
     if (rows && rows.length > 0) {
       // 有云端数据 → 更新缓存
-      const drafts = rows.map(_rowToDraft);
-      _cacheSet(CACHE.drafts, drafts);
+      _cacheSet(CACHE.drafts, rows.map(_rowToDraft));
     } else if (rows !== null && rows.length === 0) {
       // 云端是空的（首次使用）→ 植入种子数据
       const existing = _cacheGet(CACHE.drafts);
       const seeds = existing && existing.length > 0 ? existing : SEED_DRAFTS;
       _cacheSet(CACHE.drafts, seeds);
-      // 写入 Supabase
-      await _sb('POST', 'drafts', seeds.map(_draftToRow));
+      // 逐条 upsert 写入 Supabase（避免批量 POST 被拦截）
+      for (const d of seeds) {
+        await _sbUpsert('drafts', _draftToRow(d));
+      }
     }
     // 拉素材和拆解
     const [suzaiRows, bdRows] = await Promise.all([
@@ -219,6 +218,11 @@ const Store = (() => {
     _dispatch('store-ready');
   }
 
+  /* Supabase upsert 单条（on_conflict=id） */
+  async function _sbUpsert(table, row) {
+    return _sb('POST', table, [row], '?on_conflict=id');
+  }
+
   /* ══════════════ 草稿 CRUD ══════════════ */
 
   function getDraftsSync() {
@@ -232,9 +236,10 @@ const Store = (() => {
   async function saveDrafts(drafts) {
     _cacheSet(CACHE.drafts, drafts);
     _dispatch('drafts-updated');
-    // 全量同步：先删后插（简单可靠）
-    await _sb('DELETE', 'drafts', null, '?id=gte.0');
-    if (drafts.length) await _sb('POST', 'drafts', drafts.map(_draftToRow));
+    // 逐条 upsert（比全量删除+插入更可靠）
+    for (const d of drafts) {
+      await _sbUpsert('drafts', _draftToRow(d));
+    }
   }
 
   async function createDraft(partial = {}) {
@@ -251,8 +256,7 @@ const Store = (() => {
     drafts.unshift(newDraft);
     _cacheSet(CACHE.drafts, drafts);
     _dispatch('drafts-updated');
-    // 单条写入 Supabase
-    await _sb('POST', 'drafts', [_draftToRow(newDraft)]);
+    await _sbUpsert('drafts', _draftToRow(newDraft));
     return newDraft;
   }
 
@@ -263,9 +267,7 @@ const Store = (() => {
     drafts[idx] = { ...drafts[idx], ...changes };
     _cacheSet(CACHE.drafts, drafts);
     _dispatch('drafts-updated');
-    // Supabase upsert
-    await _sb('POST', 'drafts', [_draftToRow(drafts[idx])],
-      '?on_conflict=id');
+    await _sbUpsert('drafts', _draftToRow(drafts[idx]));
     return drafts[idx];
   }
 
@@ -342,8 +344,7 @@ const Store = (() => {
   async function saveSuzai(items) {
     _cacheSet(CACHE.suzai, items);
     _dispatch('suzai-updated');
-    await _sb('DELETE', 'suzai', null, '?id=gte.0');
-    if (items.length) await _sb('POST', 'suzai', items.map(_suzaiToRow));
+    for (const s of items) await _sbUpsert('suzai', _suzaiToRow(s));
   }
 
   async function addSuzaiItem(item) {
@@ -352,7 +353,7 @@ const Store = (() => {
     items.unshift(newItem);
     _cacheSet(CACHE.suzai, items);
     _dispatch('suzai-updated');
-    await _sb('POST', 'suzai', [_suzaiToRow(newItem)]);
+    await _sbUpsert('suzai', _suzaiToRow(newItem));
     return newItem;
   }
 
@@ -364,8 +365,7 @@ const Store = (() => {
   async function saveBreakdowns(items) {
     _cacheSet(CACHE.breakdowns, items);
     _dispatch('breakdown-updated');
-    await _sb('DELETE', 'breakdowns', null, '?id=gte.0');
-    if (items.length) await _sb('POST', 'breakdowns', items.map(_bdToRow));
+    for (const b of items) await _sbUpsert('breakdowns', _bdToRow(b));
   }
 
   /* ══════════════ 爆款导入 ══════════════ */
@@ -409,9 +409,9 @@ const Store = (() => {
     _dispatch('breakdown-updated');
     _dispatch('suzai-updated');
 
-    // 写 Supabase
-    if (newBDs.length)   await _sb('POST', 'breakdowns', newBDs.map(_bdToRow));
-    if (newItems.length) await _sb('POST', 'suzai',      newItems.map(_suzaiToRow));
+    // 写 Supabase（逐条 upsert）
+    for (const b of newBDs)   await _sbUpsert('breakdowns', _bdToRow(b));
+    for (const s of newItems) await _sbUpsert('suzai',      _suzaiToRow(s));
 
     return { bdCount: newBDs.length, itemCount: newItems.length };
   }
