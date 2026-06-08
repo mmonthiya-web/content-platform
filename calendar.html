@@ -442,7 +442,7 @@ function draftsToCalPosts(drafts) {
     }));
 }
 
-function getDrafts()  { return Store.getDrafts(); }
+function getDrafts()  { return Store.getDraftsSync(); }
 function getPosts()   { return draftsToCalPosts(getDrafts()); }
 
 // 兼容变量名
@@ -473,6 +473,13 @@ let weekOffset = 0; // weeks from current week
 renderCalTitle();
 renderMonth();
 updateStats();
+
+function onStoreReady() {
+  DRAFTS = getDrafts();
+  POSTS  = getPosts();
+  renderMonth();
+  updateStats();
+}
 
 /* ═══ STATS ═══ */
 function updateStats() {
@@ -820,7 +827,7 @@ function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
 }
 
-function confirmSchedule() {
+async function confirmSchedule() {
   const dateVal = document.getElementById('modal-date').value;
   const hour = document.getElementById('modal-hour').value;
   const min  = document.getElementById('modal-min').value;
@@ -833,7 +840,7 @@ function confirmSchedule() {
 
   if (modalDraftId) {
     // 写入 Store：更新草稿的排期信息
-    Store.updateDraft(modalDraftId, {
+    await Store.updateDraft(modalDraftId, {
       status: 'scheduled',
       schedDate: dateVal,
       schedTime: `${hour}:${min}`,
@@ -851,24 +858,24 @@ function confirmSchedule() {
   showToast('排期已设置 ✓');
 }
 
-function quickScheduleDraft(draftId, dateKey) {
+async function quickScheduleDraft(draftId, dateKey) {
   const dr = DRAFTS.find(x => x.id === draftId);
   if (!dr) return;
   // 日期格式从 YYYY-M-D 转成 YYYY-MM-DD
   const parts = dateKey.split('-').map(Number);
   const isoDate = `${parts[0]}-${String(parts[1]).padStart(2,'0')}-${String(parts[2]).padStart(2,'0')}`;
-  Store.updateDraft(draftId, { status:'scheduled', schedDate: isoDate, schedTime:'10:00' });
+  await Store.updateDraft(draftId, { status:'scheduled', schedDate: isoDate, schedTime:'10:00' });
   DRAFTS = getDrafts();
   POSTS  = getPosts();
   updateStats(); renderMonth(); renderDetailPanel(dateKey); openDrawer();
   showToast(`已排期到 ${dateKey.split('-').slice(1).join('/')} ✓`);
 }
 
-function removePost(id) {
+async function removePost(id) {
   // 找到对应草稿，把排期清掉
   const p = POSTS.find(x => x.id === id);
   if (p) {
-    Store.updateDraft(p.id, { status:'draft', schedDate:'', schedTime:'' });
+    await Store.updateDraft(p.id, { status:'draft', schedDate:'', schedTime:'' });
     DRAFTS = getDrafts();
     POSTS  = getPosts();
   }

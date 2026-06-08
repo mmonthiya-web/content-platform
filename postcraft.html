@@ -1164,8 +1164,8 @@ function updateToneVariants(activeTone) {
 }
 
 /* ═══ HISTORY ═══ */
-function addToHistory(result) {
-  Store.addGenHistory(result);
+async function addToHistory(result) {
+  await Store.addGenHistory(result);
   genHistory = Store.getGenHistory();
 }
 function renderHistoryEmpty() {
@@ -1204,9 +1204,9 @@ function copyAll() {
   showToast('已复制全文 ✓');
 }
 function copyStr(s) { navigator.clipboard?.writeText(s); showToast('已复制'); }
-function saveDraft() {
+async function saveDraft() {
   if (!lastResult) return;
-  const newDraft = Store.saveAIDraft({
+  const newDraft = await Store.saveAIDraft({
     headline:  lastResult.headline,
     body:      lastResult.body,
     hashtags:  lastResult.hashtags || [],

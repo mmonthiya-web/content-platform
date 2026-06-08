@@ -510,11 +510,11 @@ document.getElementById('today-date').textContent =
   if (avEl)   avEl.textContent   = name[0] || '?';
 })();
 
-function editName() {
+async function editName() {
   const current = Store.getUserName();
   const newName = prompt('请输入你的名字：', current);
   if (newName && newName.trim()) {
-    Store.setUserName(newName.trim());
+    await Store.setUserName(newName.trim());
     const nameEl = document.getElementById('user-name');
     const avEl   = document.getElementById('nav-avatar');
     if (nameEl) nameEl.textContent = newName.trim();
@@ -525,7 +525,7 @@ function editName() {
 /* ── 首页数据渲染（从 Store 读取） ── */
 function renderDashboard() {
   const stats = Store.getStats();
-  const drafts = Store.getDrafts();
+  const drafts = Store.getDraftsSync();
 
   /* 流水线数字 */
   const pipeCards = document.querySelectorAll('.pc-n');
@@ -686,7 +686,7 @@ function renderCal() {
   grid.innerHTML = '';
 
   // 从 store 读取已排期草稿
-  const scheduled = Store.getDrafts().filter(d => d.schedDate);
+  const scheduled = Store.getDraftsSync().filter(d => d.schedDate);
   const todayKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
 
   const first = new Date(cy, cm, 1).getDay();
@@ -746,6 +746,12 @@ Store.onChange(event => {
     renderCal();
   }
 });
+
+/* ── Supabase 数据加载完后刷新 ── */
+function onStoreReady() {
+  renderDashboard();
+  renderCal();
+}
 
 /* ── 初始化 ── */
 renderDashboard();

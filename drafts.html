@@ -482,7 +482,7 @@ Store.onChange(event => {
 });
 
 /* ═══ DATA — 从 Store 读取，不再硬编码 ═══ */
-let drafts = Store.getDrafts();
+let drafts = Store.getDraftsSync();
 
 let curStatus = 'all';
 let curCat = 'all';
@@ -494,7 +494,7 @@ let curDraftPlats = ['xhs'];
 /* 其他标签页更新数据时，自动刷新本页 */
 Store.onChange(event => {
   if (event === 'drafts-updated') {
-    drafts = Store.getDrafts();
+    drafts = Store.getDraftsSync();
     updateStats();
     renderCards();
   }
@@ -504,6 +504,14 @@ Store.onChange(event => {
 buildCatChips();
 renderCards();
 updateStats();
+
+/* 当 Supabase 数据加载完成后，刷新页面显示最新数据 */
+function onStoreReady() {
+  drafts = Store.getDraftsSync();
+  buildCatChips();
+  renderCards();
+  updateStats();
+}
 
 /* ═══ CATEGORY CHIPS ═══ */
 function buildCatChips() {
@@ -535,7 +543,7 @@ function buildCatChips() {
       const cat = CATS.find(c => c.id === id);
       if (!cat) return;
       if (confirm(`删除分类「${cat.label}」？已使用此分类的草稿会自动移除该分类标签。`)) {
-        Store.deleteCat(id);
+        await Store.deleteCat(id);
         CATS = Store.getCats();
         buildCatChips();
         if (curCat === id) filterCat('all', con.querySelector('[data-cat="all"]') || con.firstChild);
@@ -815,7 +823,7 @@ function updateCompleteness(d) {
 }
 
 /* ═══ ACTIONS ═══ */
-function saveDraft() {
+async function saveDraft() {
   if (!selId) return;
   const d = drafts.find(x => x.id === selId);
   if (!d) return;
@@ -830,12 +838,12 @@ function saveDraft() {
   d.schedTime = h && m ? `${h}:${m}` : '';
   if (d.schedDate && d.status === 'draft') d.status = 'scheduled';
   d.completeness = Store.calcCompleteness(d);
-  Store.saveDrafts(drafts);  // ← 持久化
+  await Store.saveDrafts(drafts);  // ← 持久化
   updateStats();
   renderCards();
   showToast('草稿已保存 ✓');
 }
-function confirmSchedule() {
+async function confirmSchedule() {
   saveDraft();
   showToast('已设置排期 ✓ 可在排期日历查看');
 }
@@ -846,27 +854,27 @@ function copyDraft() {
   navigator.clipboard?.writeText(text);
   showToast('已复制全文 ✓');
 }
-function duplicateDraft() {
+async function duplicateDraft() {
   if (!selId) return;
   const d = drafts.find(x => x.id === selId);
   const newD = { ...d, id: Date.now(), title: d.title + '（副本）', status: 'draft', schedDate: '', schedTime: '', created: new Date().toISOString().slice(0,10) };
   drafts.unshift(newD);
-  Store.saveDrafts(drafts);  // ← 持久化
+  await Store.saveDrafts(drafts);  // ← 持久化
   updateStats(); renderCards();
   showToast('已复制为新草稿');
 }
-function deleteDraft() {
+async function deleteDraft() {
   if (!selId) return;
   if (!confirm('确定删除这篇草稿吗？此操作不可撤销。')) return;
   drafts = drafts.filter(x => x.id !== selId);
-  Store.saveDrafts(drafts);  // ← 持久化
+  await Store.saveDrafts(drafts);  // ← 持久化
   closePanel(); updateStats(); renderCards();
   showToast('已删除');
 }
-function quickDelete(id) {
+async function quickDelete(id) {
   if (!confirm('确定删除？')) return;
   drafts = drafts.filter(x => x.id !== id);
-  Store.saveDrafts(drafts);  // ← 持久化
+  await Store.saveDrafts(drafts);  // ← 持久化
   if (selId === id) closePanel();
   updateStats(); renderCards();
   showToast('已删除');
@@ -875,9 +883,9 @@ function quickSchedule(id) {
   openEdit(id);
   setTimeout(() => document.getElementById('sched-date').focus(), 100);
 }
-function newDraft() {
-  const newD = Store.createDraft();  // ← 通过 Store 创建并持久化
-  drafts = Store.getDrafts();
+async function newDraft() {
+  const newD = await Store.createDraft();  // ← 通过 Store 创建并持久化
+  drafts = Store.getDraftsSync();
   updateStats(); renderCards(); openEdit(newD.id);
   setTimeout(() => document.getElementById('ef-title').focus(), 50);
 }
@@ -897,7 +905,7 @@ function editUserName(){
   const cur = Store.getUserName();
   const n = prompt('请输入你的名字：', cur);
   if(n && n.trim()) {
-    Store.setUserName(n.trim());
+    await Store.setUserName(n.trim());
     const el = document.getElementById('nav-avatar');
     if(el) el.textContent = n.trim()[0];
   }
@@ -925,12 +933,12 @@ function renderCatList() {
       </button>
     </div>`).join('');
 }
-function deleteCatById(id) {
+async function deleteCatById(id) {
   const cats = Store.getCats();
   const cat = cats.find(c => c.id === id);
   if (!cat) return;
   if (!confirm(`删除分类「${cat.label}」？`)) return;
-  Store.deleteCat(id);
+  await Store.deleteCat(id);
   CATS = Store.getCats();
   buildCatChips();
   renderCatList();
@@ -941,7 +949,7 @@ function deleteCatById(id) {
   }
   showToast(`已删除分类「${cat.label}」`);
 }
-function addNewCat() {
+async function addNewCat() {
   const label = document.getElementById('cat-new-label').value.trim();
   const color = document.getElementById('cat-new-color').value;
   if (!label) { showToast('请输入分类名称'); return; }
@@ -949,7 +957,7 @@ function addNewCat() {
   const r = parseInt(color.slice(1,3),16), g = parseInt(color.slice(3,5),16), b = parseInt(color.slice(5,7),16);
   const luminance = (0.299*r + 0.587*g + 0.114*b) / 255;
   const text = luminance > 0.6 ? '#3a3a4a' : '#ffffff';
-  Store.addCat({ label, color, text });
+  await Store.addCat({ label, color, text });
   CATS = Store.getCats();
   buildCatChips();
   renderCatList();

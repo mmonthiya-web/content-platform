@@ -602,8 +602,8 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
 
 <script>
 /* ═══ DATA — 从 Store 读取 ═══ */
-let ITEMS = Store.getSuzai();
-let BREAKDOWNS = Store.getBreakdowns();
+let ITEMS = Store.getSuzaiSync();
+let BREAKDOWNS = Store.getBreakdownsSync();
 
 const TYPE_META={inspire:{label:'灵感',cls:'tag-inspire'},hook:{label:'Hook',cls:'tag-hook'},title:{label:'标题',cls:'tag-title'},cta:{label:'CTA',cls:'tag-cta'},breakdown:{label:'拆解',cls:'tag-breakdown'},faq:{label:'高频问题',cls:'tag-faq'}};
 const STATUS_META={unused:{label:'未使用',cls:'u-un'},drafted:{label:'已入草稿',cls:'u-dr'},published:{label:'已发布',cls:'u-pb'}};
@@ -613,8 +613,8 @@ let curType='all',curStatus='all',curView='grid',selId=null,curBD=BREAKDOWNS[0];
 /* 其他页更新时刷新 */
 Store.onChange(event => {
   if (event === 'suzai-updated' || event === 'breakdown-updated') {
-    ITEMS = Store.getSuzai();
-    BREAKDOWNS = Store.getBreakdowns();
+    ITEMS = Store.getSuzaiSync();
+    BREAKDOWNS = Store.getBreakdownsSync();
     curBD = BREAKDOWNS[0];
     renderCards();
     renderBDList();
@@ -967,7 +967,7 @@ function previewImport() {
   }
 }
 
-function confirmImport() {
+async function confirmImport() {
   const raw = document.getElementById('import-json').value.trim();
   const url  = document.getElementById('import-url').value.trim();
   const errEl = document.getElementById('import-error');
@@ -977,9 +977,9 @@ function confirmImport() {
     let parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
     // 如果有填 URL，注入到第一条
     if (url && !Array.isArray(parsed)) parsed.url = parsed.url || url;
-    const result = Store.importBreakdown(parsed);
-    ITEMS = Store.getSuzai();
-    BREAKDOWNS = Store.getBreakdowns();
+    const result = await Store.importBreakdown(parsed);
+    ITEMS = Store.getSuzaiSync();
+    BREAKDOWNS = Store.getBreakdownsSync();
     curBD = BREAKDOWNS[0];
     closeImportModal();
     renderCards();
@@ -994,6 +994,15 @@ function confirmImport() {
 
 renderCards();
 updateSbCounts();
+
+function onStoreReady() {
+  ITEMS      = Store.getSuzaiSync();
+  BREAKDOWNS = Store.getBreakdownsSync();
+  curBD      = BREAKDOWNS[0];
+  renderCards();
+  renderBDList();
+  updateSbCounts();
+}
 
 // User name
 (function(){
