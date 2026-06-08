@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="store.js"></script>
 <style>
 :root{
   --oyster:#F1ECE1;--pure:#F8F5F0;--linen:#EDE8DF;
@@ -423,13 +424,41 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
 <div class="toast" id="toast"></div>
 
 <script>
-/* ═══ DATA ═══ */
-const DRAFTS = [];
-
+/* ═══ DATA — 从 Store 读取 ═══ */
 const CAT_COLORS = {skincare:['#ECE8F5','#5340A0'],lifestyle:['#E6EEE0','#3E5432'],travel:['#E8EEF5','#2A5080'],food:['#F2E8D0','#7A5518']};
 
-// scheduled posts with real dates
-let POSTS = [];
+/** 把草稿转换成日历用的 POSTS 格式 */
+function draftsToCalPosts(drafts) {
+  return drafts
+    .filter(d => d.schedDate && (d.status === 'scheduled' || d.status === 'published'))
+    .map(d => ({
+      id: d.id,
+      title: d.title,
+      date: d.schedDate,
+      time: d.schedTime || '00:00',
+      status: d.status === 'published' ? 'published' : 'scheduled',
+      platform: d.platform,
+      cats: d.cats,
+    }));
+}
+
+function getDrafts()  { return Store.getDrafts(); }
+function getPosts()   { return draftsToCalPosts(getDrafts()); }
+
+// 兼容变量名
+let DRAFTS = getDrafts();
+let POSTS  = getPosts();
+
+/* 其他页面改动草稿时自动刷新 */
+Store.onChange(event => {
+  if (event === 'drafts-updated') {
+    DRAFTS = getDrafts();
+    POSTS  = getPosts();
+    renderMonth();
+    updateStats();
+    if (selDate) renderDetailPanel(selDate);
+  }
+});
 
 const now = new Date();
 let calYear = now.getFullYear();
@@ -801,25 +830,17 @@ function confirmSchedule() {
 
   const [y,m,d] = dateVal.split('-').map(Number);
   const key = `${y}-${m}-${d}`;
-  const todayKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
 
-  let title = '新内容';
   if (modalDraftId) {
-    const dr = DRAFTS.find(x => x.id === modalDraftId);
-    if (dr) { dr.status = 'scheduled'; title = dr.title; }
+    // 写入 Store：更新草稿的排期信息
+    Store.updateDraft(modalDraftId, {
+      status: 'scheduled',
+      schedDate: dateVal,
+      schedTime: `${hour}:${min}`,
+    });
+    DRAFTS = getDrafts();
+    POSTS  = getPosts();
   }
-
-  const newPost = {
-    id: Date.now(), draftId: modalDraftId,
-    title, date: key, time: `${hour}:${min}`,
-    status: key === todayKey ? 'today' : 'scheduled',
-    platform: 'xhs', cats: []
-  };
-  if (modalDraftId) {
-    const dr = DRAFTS.find(x => x.id === modalDraftId);
-    if (dr) newPost.cats = dr.cats;
-  }
-  POSTS.push(newPost);
 
   closeModal();
   selDate = key;
@@ -833,26 +854,24 @@ function confirmSchedule() {
 function quickScheduleDraft(draftId, dateKey) {
   const dr = DRAFTS.find(x => x.id === draftId);
   if (!dr) return;
-  const todayKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
-  const newPost = {
-    id: Date.now(), draftId,
-    title: dr.title, date: dateKey, time: '10:00',
-    status: dateKey === todayKey ? 'today' : 'scheduled',
-    platform: dr.platform, cats: dr.cats
-  };
-  POSTS.push(newPost);
-  dr.status = 'scheduled';
+  // 日期格式从 YYYY-M-D 转成 YYYY-MM-DD
+  const parts = dateKey.split('-').map(Number);
+  const isoDate = `${parts[0]}-${String(parts[1]).padStart(2,'0')}-${String(parts[2]).padStart(2,'0')}`;
+  Store.updateDraft(draftId, { status:'scheduled', schedDate: isoDate, schedTime:'10:00' });
+  DRAFTS = getDrafts();
+  POSTS  = getPosts();
   updateStats(); renderMonth(); renderDetailPanel(dateKey); openDrawer();
   showToast(`已排期到 ${dateKey.split('-').slice(1).join('/')} ✓`);
 }
 
 function removePost(id) {
+  // 找到对应草稿，把排期清掉
   const p = POSTS.find(x => x.id === id);
-  if (p && p.draftId) {
-    const dr = DRAFTS.find(x => x.id === p.draftId);
-    if (dr) dr.status = 'draft';
+  if (p) {
+    Store.updateDraft(p.id, { status:'draft', schedDate:'', schedTime:'' });
+    DRAFTS = getDrafts();
+    POSTS  = getPosts();
   }
-  POSTS = POSTS.filter(x => x.id !== id);
   const wasOpen = document.getElementById('dp-detail-panel').classList.contains('open');
   updateStats(); renderMonth();
   if (wasOpen && selDate) { renderDetailPanel(selDate); } else { closeDrawer(); }

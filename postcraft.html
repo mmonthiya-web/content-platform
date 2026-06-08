@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="store.js"></script>
 <style>
 :root{
   --oyster:#F1ECE1;--pure:#F8F5F0;--linen:#EDE8DF;
@@ -1164,9 +1165,8 @@ function updateToneVariants(activeTone) {
 
 /* ═══ HISTORY ═══ */
 function addToHistory(result) {
-  genHistory.unshift({ tone: result.tone, topic: result.topic, headline: result.headline, body: result.body, hashtags: result.hashtags, why: result.why, ts: Date.now() });
-  if (genHistory.length > 20) genHistory = genHistory.slice(0, 20);
-  localStorage.setItem('genHistory', JSON.stringify(genHistory));
+  Store.addGenHistory(result);
+  genHistory = Store.getGenHistory();
 }
 function renderHistoryEmpty() {
   const con = document.getElementById('hist-list-empty');
@@ -1206,11 +1206,18 @@ function copyAll() {
 function copyStr(s) { navigator.clipboard?.writeText(s); showToast('已复制'); }
 function saveDraft() {
   if (!lastResult) return;
+  const newDraft = Store.saveAIDraft({
+    headline:  lastResult.headline,
+    body:      lastResult.body,
+    hashtags:  lastResult.hashtags || [],
+    tone:      lastResult.tone,
+    topic:     lastResult.topic,
+  });
   const btn = document.getElementById('save-btn');
   btn.innerHTML = '<i class="ti ti-check"></i>已保存到草稿库';
   btn.classList.add('saved');
   document.getElementById('nf-draft').classList.add('done');
-  showToast('已保存到草稿库 ✓');
+  showToast('已保存到草稿库 ✓ — 可在草稿库查看');
   setTimeout(() => { btn.innerHTML = '<i class="ti ti-layout-kanban"></i>保存到草稿库'; btn.classList.remove('saved'); }, 3000);
 }
 function schedulePost() { showToast('跳转排期日历…'); }

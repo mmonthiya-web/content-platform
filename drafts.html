@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="store.js"></script>
 <style>
 :root{
   --oyster:#F1ECE1;--pure:#F8F5F0;--linen:#EDE8DF;
@@ -479,17 +480,8 @@ const CATS = [
   {id:'fashion',label:'穿搭',color:'#F5EBF0',text:'#803060'},
 ];
 
-/* ═══ DATA ═══ */
-let drafts = [
-  {id:1,title:'🧴 The Ordinary 果酸水保姆级使用指南',body:'第一次用TO果酸水？别急！新手必须先建立耐受...\n\n【第一步：低频开始】\n一周2-3次，从最低浓度开始\n皮肤不适立刻停用\n\n【第二步：观察皮肤】\n正常反应：轻微刺痛感（1-2分钟内消退）\n异常反应：持续灼热、大面积红肿',hashtags:['TO果酸水','护肤','功效成分','新手必看'],cats:['skincare'],platform:'xhs',status:'draft',schedDate:'',schedTime:'',img:'',created:'2026-06-04',completeness:85},
-  {id:2,title:'越懒的人皮肤越好？反直觉护肤法',body:'你有没有发现，身边那些皮肤超好的人，反而不怎么护肤？\n\n今天来聊聊「懒人护肤法」——为什么少折腾皮肤反而更好...',hashtags:['懒人护肤','极简护肤','护肤心得'],cats:['skincare'],platform:'xhs',status:'draft',schedDate:'',schedTime:'',img:'',created:'2026-06-03',completeness:60},
-  {id:3,title:'🌞 防晒误区大盘点！你每天都做错的那件事',body:'99%的人用防晒的姿势是错的！\n\n❌ 误区一：SPF越高越好\n✅ 正解：日常通勤SPF30 PA++足够...',hashtags:['防晒','护肤误区','成分党'],cats:['skincare'],platform:'xhs',status:'scheduled',schedDate:'2026-06-07',schedTime:'10:00',img:'',created:'2026-06-02',completeness:100},
-  {id:4,title:'新加坡超平价好物分享 🛒',body:'在新加坡生活N年，这些平价好物真的回购无数次...',hashtags:['新加坡','好物分享','平价推荐'],cats:['lifestyle'],platform:'xhs',status:'draft',schedDate:'',schedTime:'',img:'',created:'2026-06-01',completeness:40},
-  {id:5,title:'28天皮肤蜕变计划：油痘肌到哑光肌全过程',body:'28天前，我的脸是这样的...\n（对比图）\n\n28天后，真的变了！来分享一下我的全过程...',hashtags:['护肤','28天挑战','油痘肌'],cats:['skincare'],platform:'xhs',status:'published',schedDate:'2026-06-01',schedTime:'09:00',img:'',created:'2026-05-28',completeness:100},
-  {id:6,title:'敏感肌选防晒指南：4个关键指标',body:'敏感肌选防晒最怕踩雷，今天教你4个选品指标...',hashtags:['敏感肌','防晒选择','护肤'],cats:['skincare'],platform:'xhs',status:'draft',schedDate:'',schedTime:'',img:'',created:'2026-05-30',completeness:70},
-  {id:7,title:'📱 我的桌面收纳好物清单（附购买链接）',body:'工作台乱成一团？来看看我的收纳方案！\n\n1. 桌面收纳盒：宜家TJENA系列\n2. 显示器支架：乐歌E1...',hashtags:['桌面收纳','好物推荐','居家'],cats:['lifestyle'],platform:'xhs',status:'draft',schedDate:'',schedTime:'',img:'',created:'2026-05-27',completeness:55},
-  {id:8,title:'新加坡周末去哪里？5个适合拍照的打卡地',body:'住新加坡这么久，发现这5个地方特别适合周末打卡...',hashtags:['新加坡','周末打卡','拍照地'],cats:['travel'],platform:'xhs',status:'scheduled',schedDate:'2026-06-10',schedTime:'14:00',img:'',created:'2026-05-25',completeness:90},
-];
+/* ═══ DATA — 从 Store 读取，不再硬编码 ═══ */
+let drafts = Store.getDrafts();
 
 let curStatus = 'all';
 let curCat = 'all';
@@ -497,6 +489,15 @@ let selId = null;
 let curDraftTags = [];
 let curDraftCats = [];
 let curDraftPlats = ['xhs'];
+
+/* 其他标签页更新数据时，自动刷新本页 */
+Store.onChange(event => {
+  if (event === 'drafts-updated') {
+    drafts = Store.getDrafts();
+    updateStats();
+    renderCards();
+  }
+});
 
 /* ═══ INIT ═══ */
 buildCatChips();
@@ -791,6 +792,7 @@ function updateCompleteness(d) {
 function saveDraft() {
   if (!selId) return;
   const d = drafts.find(x => x.id === selId);
+  if (!d) return;
   d.title = document.getElementById('ef-title').value;
   d.body = document.getElementById('ef-body').value;
   d.hashtags = [...curDraftTags];
@@ -801,6 +803,8 @@ function saveDraft() {
   const m = document.getElementById('sched-min').value;
   d.schedTime = h && m ? `${h}:${m}` : '';
   if (d.schedDate && d.status === 'draft') d.status = 'scheduled';
+  d.completeness = Store.calcCompleteness(d);
+  Store.saveDrafts(drafts);  // ← 持久化
   updateStats();
   renderCards();
   showToast('草稿已保存 ✓');
@@ -821,6 +825,7 @@ function duplicateDraft() {
   const d = drafts.find(x => x.id === selId);
   const newD = { ...d, id: Date.now(), title: d.title + '（副本）', status: 'draft', schedDate: '', schedTime: '', created: new Date().toISOString().slice(0,10) };
   drafts.unshift(newD);
+  Store.saveDrafts(drafts);  // ← 持久化
   updateStats(); renderCards();
   showToast('已复制为新草稿');
 }
@@ -828,12 +833,14 @@ function deleteDraft() {
   if (!selId) return;
   if (!confirm('确定删除这篇草稿吗？此操作不可撤销。')) return;
   drafts = drafts.filter(x => x.id !== selId);
+  Store.saveDrafts(drafts);  // ← 持久化
   closePanel(); updateStats(); renderCards();
   showToast('已删除');
 }
 function quickDelete(id) {
   if (!confirm('确定删除？')) return;
   drafts = drafts.filter(x => x.id !== id);
+  Store.saveDrafts(drafts);  // ← 持久化
   if (selId === id) closePanel();
   updateStats(); renderCards();
   showToast('已删除');
@@ -843,9 +850,9 @@ function quickSchedule(id) {
   setTimeout(() => document.getElementById('sched-date').focus(), 100);
 }
 function newDraft() {
-  const id = Date.now();
-  drafts.unshift({id,title:'',body:'',hashtags:[],cats:[],platform:'xhs',status:'draft',schedDate:'',schedTime:'',img:'',created:new Date().toISOString().slice(0,10),completeness:0});
-  updateStats(); renderCards(); openEdit(id);
+  const newD = Store.createDraft();  // ← 通过 Store 创建并持久化
+  drafts = Store.getDrafts();
+  updateStats(); renderCards(); openEdit(newD.id);
   setTimeout(() => document.getElementById('ef-title').focus(), 50);
 }
 

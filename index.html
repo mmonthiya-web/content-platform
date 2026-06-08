@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="store.js"></script>
 <style>
 :root {
   --oyster:     #F1ECE1;
@@ -291,8 +292,8 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
     </div>
     <div class="sb-grp">
       <div class="sb-grp-lbl">发布中心</div>
-      <div class="ni on" onclick="window.location.href='drafts.html'"><i class="ti ti-layout-kanban"></i><span>草稿库</span><span class="nb">0</span></div>
-      <div class="ni" onclick="window.location.href=\'calendar.html\'"><i class="ti ti-calendar-event"></i><span>排期日历</span></div>
+      <div class="ni on" onclick="window.location.href='drafts.html'"><i class="ti ti-layout-kanban"></i><span>草稿库</span><span class="nb" id="sb-draft-nb">0</span></div>
+      <div class="ni" onclick="window.location.href='calendar.html'"><i class="ti ti-calendar-event"></i><span>排期日历</span></div>
       <div class="ni"><i class="ti ti-circle-check"></i><span>发布记录</span></div>
     </div>
   </div>
@@ -415,8 +416,6 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
             </div>
           </div>
         </div>
-      </div>
-      <!-- PRIORITY
 
         <!-- PRIORITY CONTENT — driven by diagnosis: complete near-done drafts -->
         <div>
@@ -427,7 +426,7 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
             </div>
             <a class="sh-link" onclick="window.location.href='drafts.html'" style="cursor:pointer;">草稿库 <i class="ti ti-arrow-right" style="font-size:11px"></i></a>
           </div>
-          <div class="prio-list">
+          <div class="prio-list" id="prio-list">
             <div style="padding:20px;text-align:center;color:var(--taupe);font-size:12px;line-height:1.8;">
               还没有草稿 — 去<a href="postcraft.html" style="color:var(--caramel);">创作页</a>生成第一篇文案
             </div>
@@ -496,50 +495,204 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
 </div>
 
 <script>
-/* date */
+/* ── 日期 ── */
 const now = new Date();
 const wds = ['周日','周一','周二','周三','周四','周五','周六'];
 document.getElementById('today-date').textContent =
   `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 · ${wds[now.getDay()]}`;
 
-/* compose hints */
+/* ── 用户名 ── */
+(function() {
+  const name = Store.getUserName();
+  const nameEl = document.getElementById('user-name');
+  const avEl   = document.getElementById('nav-avatar');
+  if (nameEl) nameEl.textContent = name;
+  if (avEl)   avEl.textContent   = name[0] || '?';
+})();
+
+function editName() {
+  const current = Store.getUserName();
+  const newName = prompt('请输入你的名字：', current);
+  if (newName && newName.trim()) {
+    Store.setUserName(newName.trim());
+    const nameEl = document.getElementById('user-name');
+    const avEl   = document.getElementById('nav-avatar');
+    if (nameEl) nameEl.textContent = newName.trim();
+    if (avEl)   avEl.textContent   = newName.trim()[0];
+  }
+}
+
+/* ── 首页数据渲染（从 Store 读取） ── */
+function renderDashboard() {
+  const stats = Store.getStats();
+  const drafts = Store.getDrafts();
+
+  /* 流水线数字 */
+  const pipeCards = document.querySelectorAll('.pc-n');
+  if (pipeCards.length >= 4) {
+    pipeCards[0].textContent = Store.getSuzai().length;
+    pipeCards[1].textContent = stats.draftCount;
+    pipeCards[2].textContent = stats.weekSched;
+    pipeCards[3].textContent = stats.monthPub;
+  }
+
+  /* 诊断文字更新 */
+  const diagText = document.querySelector('.diag-text');
+  if (diagText && drafts.length > 0) {
+    const msg = stats.draftCount > 5
+      ? `草稿积压 ${stats.draftCount} 篇，建议优先完成完成度较高的草稿再创作新内容。`
+      : stats.weekSched < 2
+      ? `本周排期只有 ${stats.weekSched} 篇，建议安排更多内容保持更新频率。`
+      : `内容状态良好，继续保持！`;
+    diagText.innerHTML = `<strong>${stats.draftCount > 5 ? '执行力瓶颈' : stats.weekSched < 2 ? '排期提醒' : '状态良好'}</strong> — ${msg}`;
+  }
+
+  /* sidebar 数字 */
+  const nbEls = document.querySelectorAll('.nb');
+  // 草稿库数字（发布中心的第一个 nb）
+  const draftNb = document.getElementById('sb-draft-nb');
+  if (draftNb) draftNb.textContent = drafts.length;
+
+  /* 今日任务（从草稿推导） */
+  renderTasks(stats, drafts);
+
+  /* 优先完成草稿 */
+  renderPriorityDrafts(stats.priorityDrafts);
+}
+
+/* ── 今日任务 ── */
+const CAT_COLORS = {skincare:['#ECE8F5','#5340A0'],lifestyle:['#E6EEE0','#3E5432'],travel:['#E8EEF5','#2A5080'],food:['#F2E8D0','#7A5518'],fashion:['#F5EBF0','#803060']};
+
+function renderTasks(stats, drafts) {
+  const tasks = [];
+
+  // 有草稿积压 → 必须做
+  if (stats.draftCount > 0) {
+    const nearDone = drafts.filter(d => d.status === 'draft' && d.completeness >= 80);
+    if (nearDone.length) {
+      tasks.push({ type:'must', dot:'var(--caramel)', name:`完成「${nearDone[0].title.slice(0,15)}…」`, meta:`完成度 ${nearDone[0].completeness}%，补齐缺项即可排期`, dest:'草稿库', url:'drafts.html' });
+    }
+  }
+
+  // 本周排期不足 → 必须做
+  if (stats.weekSched < 2 && stats.draftCount > 0) {
+    tasks.push({ type:'must', dot:'var(--caramel)', name:`安排 ${Math.max(2-stats.weekSched,1)} 篇内容排期`, meta:`本周仅排期 ${stats.weekSched} 篇 — 由流水线诊断触发`, dest:'排期日历', url:'calendar.html' });
+  }
+
+  // 草稿不足 → 建议做
+  if (drafts.length < 3) {
+    tasks.push({ type:'sugg', dot:'var(--khaki)', name:'创作新内容', meta:'内容库偏少，建议补充素材', dest:'AI 生成', url:'postcraft.html' });
+  }
+
+  // 更新 tab 数字
+  const must = tasks.filter(t => t.type==='must').length;
+  const sugg = tasks.filter(t => t.type==='sugg').length;
+  document.querySelectorAll('.ttab .cnt').forEach((el,i) => {
+    if(i===0) el.textContent = tasks.length;
+    if(i===1) el.textContent = must;
+    if(i===2) el.textContent = sugg;
+  });
+  // hero 副标题
+  const heroSub = document.querySelector('.hero-sub');
+  if (heroSub) heroSub.innerHTML = tasks.length
+    ? `今天有 <strong>${must} 件必须做</strong> · ${sugg} 件建议做`
+    : `今日无待办 — 内容状态良好 ✓`;
+
+  const list = document.getElementById('task-list');
+  if (!tasks.length) {
+    list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--taupe);font-size:12px;line-height:1.8;">今日无待办，状态良好 ✓</div>';
+    return;
+  }
+
+  list.innerHTML = tasks.map((t,i) => `
+    <div class="task ${t.type}" data-type="${t.type}" onclick="toggleTask(this)">
+      <div class="chk"></div>
+      <div class="task-dot" style="background:${t.dot}"></div>
+      <div class="task-body">
+        <div class="task-name">${t.name} <span class="type-${t.type}">${t.type==='must'?'必须做':'建议做'}</span></div>
+        <div class="task-meta">${t.meta}</div>
+      </div>
+      <button class="task-dest" onclick="event.stopPropagation();window.location.href='${t.url}'">
+        <i class="ti ti-arrow-right"></i>${t.dest}
+      </button>
+    </div>`).join('');
+}
+
+/* ── 优先完成草稿 ── */
+function renderPriorityDrafts(list) {
+  const container = document.getElementById('prio-list');
+  if (!container) return;
+  if (!list.length) {
+    container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--taupe);font-size:12px;line-height:1.8;">还没有草稿 — 去<a href="postcraft.html" style="color:var(--caramel);">创作页</a>生成第一篇文案</div>';
+    return;
+  }
+  const catMeta = {skincare:['护肤','#ECE8F5','#5340A0'],lifestyle:['生活方式','#E6EEE0','#3E5432'],travel:['旅行','#E8EEF5','#2A5080'],food:['美食','#F2E8D0','#7A5518'],fashion:['穿搭','#F5EBF0','#803060']};
+  container.innerHTML = list.map(d => {
+    const cat = d.cats[0] && catMeta[d.cats[0]];
+    const catTag = cat ? `<span style="font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:20px;background:${cat[1]};color:${cat[2]};">${cat[0]}</span>` : '';
+    const pct = d.completeness;
+    const missing = [];
+    if (!d.hashtags.length) missing.push('标签');
+    if (!d.cats.length) missing.push('分类');
+    if (!d.schedDate) missing.push('排期');
+    return `
+      <div class="pcard" onclick="window.location.href='drafts.html'">
+        <div class="pcard-top">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="pcard-badge pb-hot"><i class="ti ti-flame" style="font-size:10px;"></i>完成度 ${pct}%</span>
+            ${catTag}
+          </div>
+          <span class="pcard-time">${d.created}</span>
+        </div>
+        <div class="pcard-title">${d.title || '（无标题草稿）'}</div>
+        <div class="pcard-checks">
+          <span class="pck ok"><i class="ti ti-check"></i>正文</span>
+          ${missing.map(m => `<span class="pck miss"><i class="ti ti-x"></i>${m}缺失</span>`).join('')}
+        </div>
+        <div class="pcard-foot">
+          <span class="pcard-est"><i class="ti ti-clock"></i>预计 5 分钟</span>
+          <span class="pcard-cta">去补全 <i class="ti ti-arrow-right"></i></span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ── 任务勾选 ── */
+function toggleTask(el) {
+  el.classList.toggle('done');
+  el.querySelector('.chk').classList.toggle('done');
+}
+
+function filterTasks(type, btn) {
+  document.querySelectorAll('.ttab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.task').forEach(t => {
+    t.style.display = (type === 'all' || t.dataset.type === type) ? '' : 'none';
+  });
+}
+
+/* ── compose hints ── */
 function fillCompose(el) {
   document.getElementById('cinp').value = el.textContent.trim();
   document.getElementById('cinp').focus();
 }
 
-/* task toggle */
-function toggleTask(el) {
-  if (el.classList.contains('done')) {
-    el.classList.remove('done');
-    el.querySelector('.chk').classList.remove('done');
-  } else {
-    el.classList.add('done');
-    el.querySelector('.chk').classList.add('done');
-  }
-}
-
-/* task filter */
-function filterTasks(type, btn) {
-  document.querySelectorAll('.ttab').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  document.querySelectorAll('.task').forEach(t => {
-    if (type === 'all') { t.style.display = ''; return; }
-    t.style.display = (t.dataset.type === type) ? '' : 'none';
-  });
-}
-
-/* calendar */
-const posts = []; // 排期数据将从草稿库同步
+/* ── 首页日历（从 Store 草稿读排期数据） ── */
 let cy = now.getFullYear(), cm = now.getMonth();
+
 function renderCal() {
   document.getElementById('cal-ttl').textContent = `${cy}年${cm+1}月`;
   const grid = document.getElementById('cal-grid');
   grid.innerHTML = '';
+
+  // 从 store 读取已排期草稿
+  const scheduled = Store.getDrafts().filter(d => d.schedDate);
+  const todayKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+
   const first = new Date(cy, cm, 1).getDay();
   const dim   = new Date(cy, cm+1, 0).getDate();
   const prev  = new Date(cy, cm, 0).getDate();
-  const todayKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+
   for (let i = first-1; i >= 0; i--) {
     const el = document.createElement('div');
     el.className = 'cd other';
@@ -548,7 +701,11 @@ function renderCal() {
   }
   for (let d = 1; d <= dim; d++) {
     const key = `${cy}-${cm+1}-${d}`;
-    const dp  = posts.filter(p => p.d === key);
+    const dp  = scheduled.filter(p => {
+      // schedDate 格式 YYYY-MM-DD，key 格式 YYYY-M-D，统一比较
+      const sd = p.schedDate.replace(/-0(\d)/g, '-$1');
+      return sd === key;
+    });
     const el  = document.createElement('div');
     let cls   = 'cd';
     if (key === todayKey) cls += ' today';
@@ -557,8 +714,8 @@ function renderCal() {
     if (dp.length) {
       html += '<div class="cd-posts">';
       dp.slice(0,2).forEach(p => {
-        const s = p.t.length > 7 ? p.t.slice(0,7)+'…' : p.t;
-        html += `<div class="cdp ${p.s === 'sched' ? 's' : ''}">${s}</div>`;
+        const s = p.title.length > 7 ? p.title.slice(0,7)+'…' : p.title;
+        html += `<div class="cdp ${p.status === 'scheduled' ? 's' : ''}">${s}</div>`;
       });
       if (dp.length > 2) html += `<div class="cdp" style="background:var(--linen);color:var(--taupe);">+${dp.length-2}</div>`;
       html += '</div>';
@@ -581,26 +738,18 @@ function changeMonth(dir) {
   if (cm > 11) { cm = 0;  cy++; }
   renderCal();
 }
-renderCal();
 
-// ── User name (customizable) ──
-(function() {
-  const saved = localStorage.getItem('userName');
-  const av2 = document.getElementById('nav-avatar'); if(av2 && saved) av2.textContent = saved[0];
-  const el = document.getElementById('user-name');
-  if (el && saved) el.textContent = saved;
-})();
-
-function editName() {
-  const current = localStorage.getItem('userName') || '访客';
-  const newName = prompt('请输入你的名字：', current);
-  if (newName && newName.trim()) {
-    const trimmed = newName.trim();
-    localStorage.setItem('userName', trimmed);
-    const el = document.getElementById('user-name');
-    if (el) el.textContent = trimmed;
+/* ── 其他标签页更新时刷新首页 ── */
+Store.onChange(event => {
+  if (event === 'drafts-updated') {
+    renderDashboard();
+    renderCal();
   }
-}
+});
+
+/* ── 初始化 ── */
+renderDashboard();
+renderCal();
 </script>
 </body>
 </html>
