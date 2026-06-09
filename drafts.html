@@ -454,7 +454,10 @@ textarea.ef-inp{line-height:1.7;}
             <button class="sched-btn" id="sched-confirm-btn" onclick="confirmSchedule()" style="display:none;">
               <i class="ti ti-calendar-event"></i>确认排期发布
             </button>
-            <button class="save-btn" onclick="saveDraft()"><i class="ti ti-check"></i>保存草稿</button>
+            <div style="position:relative;">
+              <button class="save-btn" onclick="saveDraft()"><i class="ti ti-check"></i>保存草稿</button>
+              <span id="autosave-hint" style="position:absolute;right:0;top:-20px;font-size:10px;color:var(--taupe);opacity:0;transition:opacity .3s;">✓ 已自动保存</span>
+            </div>
             <div class="ep-sec-btns">
               <button class="ep-sec-btn" onclick="copyDraft()"><i class="ti ti-copy"></i>复制全文</button>
               <button class="ep-sec-btn" onclick="duplicateDraft()"><i class="ti ti-copy-plus"></i>复制草稿</button>
@@ -507,10 +510,17 @@ updateStats();
 
 /* 当 Supabase 数据加载完成后，刷新页面显示最新数据 */
 function onStoreReady() {
+  const wasEditing = selId; // 记录当前是否在编辑
   drafts = Store.getDraftsSync();
+  CATS = Store.getCats();
   buildCatChips();
-  renderCards();
   updateStats();
+  renderCards();
+  // 如果之前在编辑某个草稿，重新打开（不打断用户）
+  if (wasEditing) {
+    const stillExists = drafts.find(d => d.id === wasEditing);
+    if (stillExists) openEdit(wasEditing);
+  }
 }
 
 /* ═══ CATEGORY CHIPS ═══ */
@@ -725,6 +735,51 @@ function handleImgUpload(e) {
 }
 
 /* ═══ FIELDS ═══ */
+/* ═══ AUTO-SAVE ═══ */
+let _autoSaveTimer = null;
+function scheduleAutoSave() {
+  if (!selId) return;
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer = setTimeout(() => {
+    autoSave();
+  }, 800); // 停止输入 800ms 后自动保存
+}
+
+async function autoSave() {
+  if (!selId) return;
+  const d = drafts.find(x => x.id === selId);
+  if (!d) return;
+  d.title       = document.getElementById('ef-title').value;
+  d.body        = document.getElementById('ef-body').value;
+  d.hashtags    = [...curDraftTags];
+  d.cats        = [...curDraftCats];
+  d.platform    = curDraftPlats[0] || 'xhs';
+  d.schedDate   = document.getElementById('sched-date').value;
+  const h = document.getElementById('sched-hour').value;
+  const m = document.getElementById('sched-min').value;
+  d.schedTime   = h && m ? `${h}:${m}` : '';
+  if (d.schedDate && d.status === 'draft') d.status = 'scheduled';
+  d.completeness = Store.calcCompleteness(d);
+  // 静默更新缓存（不触发 toast，不重渲染卡片）
+  const idx = drafts.findIndex(x => x.id === selId);
+  if (idx !== -1) drafts[idx] = d;
+  Store._cacheSetDrafts(drafts); // 只写缓存，异步写 Supabase
+  await Store.updateDraft(d.id, d);
+  // 更新完成度显示
+  updateCompleteness(d);
+  renderCards(); // 静默刷新卡片列表
+  // 显示小提示
+  showAutoSaveHint();
+}
+
+function showAutoSaveHint() {
+  const hint = document.getElementById('autosave-hint');
+  if (!hint) return;
+  hint.style.opacity = '1';
+  clearTimeout(hint._timer);
+  hint._timer = setTimeout(() => hint.style.opacity = '0', 1500);
+}
+
 function onTitleChange() {
   const val = document.getElementById('ef-title').value;
   const len = val.replace(/\s/g,'').length;
@@ -732,6 +787,7 @@ function onTitleChange() {
   cc.textContent = len + '/20';
   cc.style.color = len > 20 ? 'var(--red)' : len > 16 ? 'var(--amber)' : 'var(--taupe)';
   syncCompleteness();
+  scheduleAutoSave();
 }
 function onBodyChange() {
   const val = document.getElementById('ef-body').value;
@@ -744,6 +800,7 @@ function onBodyChange() {
   ccXhs.textContent = len + '/1000';
   ccXhs.className = 'cbar-count' + (len > 1000 ? ' over' : len > 800 ? ' warn' : '');
   syncCompleteness();
+  scheduleAutoSave();
 }
 function onSchedChange() {
   const date = document.getElementById('sched-date').value;
@@ -759,11 +816,13 @@ function addHashtag(e) {
   if (!curDraftTags.includes(val)) curDraftTags.push(val);
   renderTagsInPanel(); inp.value = '';
   syncCompleteness();
+  scheduleAutoSave();
 }
 function removeTag(tag) {
   curDraftTags = curDraftTags.filter(t => t !== tag);
   renderTagsInPanel();
   syncCompleteness();
+  scheduleAutoSave();
 }
 function renderTagsInPanel() {
   const wrap = document.getElementById('htags-wrap');
@@ -785,6 +844,7 @@ function toggleCat(cat, btn) {
   btn.style.opacity = curDraftCats.includes(cat) ? '1' : '0.4';
   btn.style.outline = curDraftCats.includes(cat) ? '2px solid var(--ink)' : 'none';
   syncCompleteness();
+  scheduleAutoSave();
 }
 function togglePlat(btn) {
   const p = btn.dataset.p;

@@ -747,6 +747,14 @@ Store.onChange(event => {
   }
 });
 
+/* ── 从其他页面跳回来时刷新（解决单标签页导航不同步问题） ── */
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    renderDashboard();
+    renderCal();
+  }
+});
+
 /* ── Supabase 数据加载完后刷新 ── */
 function onStoreReady() {
   renderDashboard();

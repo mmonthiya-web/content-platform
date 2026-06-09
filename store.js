@@ -503,6 +503,8 @@ const Store = (() => {
   /* ── 公开 API ── */
   return {
     init,
+    // 内部缓存直写（auto-save 专用，不触发 Supabase）
+    _cacheSetDrafts: (drafts) => _cacheSet(CACHE.drafts, drafts),
     // 草稿（异步）
     getDrafts, getDraftsSync, saveDrafts, createDraft,
     updateDraft, deleteDraft, saveAIDraft, calcCompleteness,
