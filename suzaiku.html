@@ -827,13 +827,18 @@ function mobNav(view,btn){
 
 function renderBDList(){
   const list=document.getElementById('bdl-list');list.innerHTML='';
-  BREAKDOWNS.forEach(bd=>{
+  BREAKDOWNS.forEach((bd,i)=>{
     const el=document.createElement('div');
     el.className='bdl-item'+(bd.id===curBD.id?' on':'');
     el.onclick=()=>{curBD=bd;renderBDDetail(bd);renderBDList();updateBDCrumb();};
-    const tags=bd.tags.map(t=>`<span class="bdl-tag" style="background:var(--linen);color:var(--mocha);">${t}</span>`).join('');
-    const ext=Object.entries(bd.extracted).filter(([,v])=>v>0).map(([k,v])=>`${TYPE_META[k]?.label||k}${v}`).join(' · ');
-    el.innerHTML=`<div class="bdl-num">${BREAKDOWNS.indexOf(bd)+1}</div><div class="bdl-name">${bd.title}</div><div class="bdl-tags">${tags}</div><div class="bdl-meta">${bd.date} · ${ext}</div>`;
+    const tags=(bd.xtags||[]).slice(0,3).map(t=>`<span class="bdl-tag" style="background:var(--linen);color:var(--mocha);">${t}</span>`).join('');
+    const parts=[];
+    if(bd.hook) parts.push('Hook');
+    if(bd.formula) parts.push('公式');
+    if(bd.cta) parts.push('CTA');
+    if(bd.summary) parts.push('灵感');
+    const ext=parts.join(' · ');
+    el.innerHTML=`<div class="bdl-num">#${i+1}</div><div class="bdl-name">${bd.title}</div><div class="bdl-tags">${tags}</div><div class="bdl-meta">${bd.date||''}${ext?' · '+ext:''}</div>`;
     list.appendChild(el);
   });
 }
@@ -847,77 +852,40 @@ function updateBDCrumb(){
 }
 function renderBDDetail(bd){
   const inner=document.getElementById('bdd-inner');
-  const extTags=Object.entries(bd.extracted).filter(([,v])=>v>0).map(([k,v])=>{
-    const m=TYPE_META[k]||{label:k,cls:'tag-inspire'};
-    return`<span class="bd-et ${m.cls}">${m.label} ${v}</span>`;
-  }).join('');
-  const nextStepsHTML=bd.nextSteps.map(ns=>`
-    <div class="ns-item">
-      <div class="ns-dot${ns.done?' done':''}"></div>
-      <div class="ns-text">${ns.text}</div>
-      <span class="ns-tag${ns.done?' done':''}">${ns.tag}</span>
-    </div>`).join('');
+  const kw=(bd.xtags||[]).map(t=>`<span class="kw">${t}</span>`).join('');
+  const tipsHTML=(bd.tips||[]).map(t=>`<div class="tip"><div class="tip-ic" style="background:#F5E4D5;color:var(--caramel);"><i class="ti ti-flame"></i></div><div class="tip-text">${t}</div></div>`).join('');
   inner.innerHTML=`
     <div style="margin-bottom:16px;">
-      <div class="bh-badge"><i class="ti ti-microscope"></i>爆款拆解 ${BREAKDOWNS.indexOf(bd)+1}</div>
+      <div class="bh-badge"><i class="ti ti-microscope"></i>爆款拆解</div>
       <div class="bh-title-row">
         <div class="bh-title">${bd.title}</div>
         <div class="bh-acts">
-          <button class="bha g"><i class="ti ti-copy"></i>复制</button>
-          <button class="bha p"><i class="ti ti-sparkles"></i>一键提取素材</button>
+          <button class="bha g" onclick="navigator.clipboard?.writeText('${(bd.title||'').replace(/'/g,"\'")}')"><i class="ti ti-copy"></i>复制</button>
         </div>
       </div>
       <div class="bh-meta">
-        <span class="bh-mi"><i class="ti ti-calendar"></i>${bd.date}</span>
-        <span class="bh-mi"><i class="ti ti-heart"></i>${bd.likes} 赞</span>
-        <span class="bh-mi"><i class="ti ti-bookmark"></i>${bd.saves} 收藏</span>
+        <span class="bh-mi"><i class="ti ti-calendar"></i>${bd.date||''}</span>
+        <span class="bh-mi"><i class="ti ti-heart"></i>${bd.likes||0} 赞</span>
+        <span class="bh-mi"><i class="ti ti-bookmark"></i>${bd.saves||0} 收藏</span>
       </div>
-      <div class="bh-url" onclick="window.open('${bd.url}')">
-        <i class="ti ti-link"></i><span>${bd.url}</span><i class="ti ti-external-link" style="flex-shrink:0;"></i>
-      </div>
+      ${bd.url?`<div class="bh-url" onclick="window.open('${bd.url}')"><i class="ti ti-link"></i><span>${bd.url}</span><i class="ti ti-external-link" style="flex-shrink:0;"></i></div>`:''}
     </div>
-    <div class="bs"><div class="bs-lbl">摘要</div><div class="b-summary">${bd.summary}</div></div>
+    ${bd.summary?`<div class="bs"><div class="bs-lbl">摘要</div><div class="b-summary">${bd.summary}</div></div>`:''}
     <div class="bs">
       <div class="bs-lbl">核心信息</div>
       <div class="kv-grid">
-        <div class="kv full"><div class="kv-l">标题</div><div class="kv-v">${bd.title}</div></div>
-        <div class="kv full"><div class="kv-l">关键词</div><div class="kw-wrap">${bd.kw.map(k=>`<span class="kw">${k}</span>`).join('')}</div></div>
-        <div class="kv full"><div class="kv-l">HOOK</div><div class="kv-v lg">${bd.hook}</div></div>
-        <div class="kv"><div class="kv-l">情绪触发</div><span class="etag">${bd.emotion}</span></div>
-        <div class="kv"><div class="kv-l">标题套路</div><span class="ftag">${bd.titleType}</span></div>
-        <div class="kv full"><div class="kv-l">触发原因</div><div class="kv-v">${bd.trigger}</div></div>
-        <div class="kv full"><div class="kv-l">套路分析</div><div class="kv-v">${bd.analysis}</div></div>
-        <div class="kv full"><div class="kv-l">文案公式</div><div class="kv-v mono">${bd.formula}</div></div>
-        <div class="kv full"><div class="kv-l">公式示例</div><div class="kv-v">${bd.formulaEg}</div></div>
-        <div class="kv"><div class="kv-l">CTA</div><div class="kv-v lg" style="font-size:13px;">${bd.cta}</div></div>
-        <div class="kv"><div class="kv-l">CTA目标</div><div class="kv-v">${bd.ctaGoal}</div></div>
-        <div class="kv full"><div class="kv-l">互动技巧</div><div class="kv-v">${bd.interaction}</div></div>
+        ${bd.hook?`<div class="kv full"><div class="kv-l">HOOK</div><div class="kv-v lg">${bd.hook}</div></div>`:''}
+        ${bd.hookType?`<div class="kv"><div class="kv-l">Hook 类型</div><span class="etag">${bd.hookType}</span></div>`:''}
+        ${bd.hookTrigger?`<div class="kv full"><div class="kv-l">触发原因</div><div class="kv-v">${bd.hookTrigger}</div></div>`:''}
+        ${bd.formula?`<div class="kv full"><div class="kv-l">文案公式</div><div class="kv-v mono">${bd.formula}</div></div>`:''}
+        ${bd.formulaExample?`<div class="kv full"><div class="kv-l">公式示例</div><div class="kv-v">${bd.formulaExample}</div></div>`:''}
+        ${bd.cta?`<div class="kv full"><div class="kv-l">CTA</div><div class="kv-v lg">${bd.cta}</div></div>`:''}
+        ${bd.ctaTarget?`<div class="kv"><div class="kv-l">CTA 目标</div><div class="kv-v">${bd.ctaTarget}</div></div>`:''}
       </div>
     </div>
-    <div class="bs">
-      <div class="bs-lbl">已提取素材</div>
-      <div class="ag">
-        <div class="ac"><span class="ac-type tag-inspire">灵感</span><div class="ac-text">保姆级攻略+功效性成分=高收藏公式</div><div class="ac-st"><i class="ti ti-check" style="color:var(--sage);"></i>已入素材库</div></div>
-        <div class="ac"><span class="ac-type tag-hook">Hook</span><div class="ac-text">${bd.hook}</div><div class="ac-st"><i class="ti ti-check" style="color:var(--sage);"></i>已入素材库</div></div>
-        <div class="ac"><span class="ac-type tag-title">标题</span><div class="ac-text">XX正确使用攻略，新手别急，三步建立耐受不烂脸</div><div class="ac-st"><i class="ti ti-check" style="color:var(--sage);"></i>已入素材库</div></div>
-        <div class="ac"><span class="ac-type tag-cta">CTA</span><div class="ac-text">${bd.cta}</div><div class="ac-st"><i class="ti ti-check" style="color:var(--sage);"></i>已入素材库</div></div>
-        <div class="ac add"><span class="ac-type" style="background:var(--linen);color:var(--taupe);">文案公式</span><div class="ac-text">${bd.formula}</div><div class="ac-st" style="color:var(--caramel);"><i class="ti ti-plus" style="color:var(--caramel);"></i>点击添加</div></div>
-        <div class="ac add"><span class="ac-type" style="background:var(--linen);color:var(--taupe);">互动技巧</span><div class="ac-text">开头声明无广，激发真实互动</div><div class="ac-st" style="color:var(--caramel);"><i class="ti ti-plus" style="color:var(--caramel);"></i>点击添加</div></div>
-      </div>
-    </div>
-    <div class="next-step">
-      <div class="ns-title"><i class="ti ti-arrow-right-circle"></i>看完这篇，下一步做什么？</div>
-      <div class="ns-items">${nextStepsHTML}</div>
-    </div>
-    <div class="bs">
-      <div class="bs-lbl">运营拆解要点</div>
-      <div class="tip-list">
-        <div class="tip"><div class="tip-ic" style="background:#F5E4D5;color:var(--caramel);"><i class="ti ti-flame"></i></div><div class="tip-text"><strong style="color:var(--ink);">焦虑型 Hook 公式：</strong>功效性成分普遍让新手有使用恐惧，"正确用法+快码住"直接解除焦虑并触发收藏，适合所有功效成分类内容套用。</div></div>
-        <div class="tip"><div class="tip-ic" style="background:var(--sage-bg);color:var(--sage);"><i class="ti ti-shield-check"></i></div><div class="tip-text"><strong style="color:var(--ink);">无广声明建立信任：</strong>开头主动声明无广，反而能激发更多真实互动，适合强产品推荐类内容。</div></div>
-        <div class="tip"><div class="tip-ic" style="background:var(--amber-bg);color:var(--amber);"><i class="ti ti-steps"></i></div><div class="tip-text"><strong style="color:var(--ink);">阶段化步骤提升完读率：</strong>三周渐进步骤让用户有明确执行路径，同时增加保存动机。</div></div>
-      </div>
-    </div>
-    <div class="bs"><div class="bs-lbl">标签</div><div class="xtags">${bd.xtags.map(t=>`<span class="xtag">${t}</span>`).join('')}</div></div>`;
+    ${tipsHTML?`<div class="bs"><div class="bs-lbl">运营要点</div><div class="tip-list">${tipsHTML}</div></div>`:''}
+    ${kw?`<div class="bs"><div class="bs-lbl">标签</div><div class="xtags">${(bd.xtags||[]).map(t=>`<span class="xtag">${t}</span>`).join('')}</div></div>`:''}
+  `;
 }
 function prevBD(){const i=BREAKDOWNS.findIndex(b=>b.id===curBD.id);if(i>0){curBD=BREAKDOWNS[i-1];renderBDDetail(curBD);renderBDList();updateBDCrumb();}}
 function nextBD(){const i=BREAKDOWNS.findIndex(b=>b.id===curBD.id);if(i<BREAKDOWNS.length-1){curBD=BREAKDOWNS[i+1];renderBDDetail(curBD);renderBDList();updateBDCrumb();}}
