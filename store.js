@@ -24,7 +24,7 @@ const Store = (() => {
     'Content-Type': 'application/json',
     'apikey': SB_KEY,
     'Authorization': `Bearer ${SB_KEY}`,
-    'Prefer': 'return=representation',
+    'Prefer': 'return=representation,resolution=merge-duplicates',
   };
 
   /* ══════════════ localStorage 缓存键 ══════════════ */
@@ -174,8 +174,8 @@ const Store = (() => {
       formulaExample:r.formula_example,
       cta:           r.cta,
       ctaTarget:     r.cta_target,
-      tips:          Array.isArray(r.tips)  ? r.tips  : (typeof r.tips  === 'string' ? JSON.parse(r.tips||'[]')  : []),
-      xtags:         Array.isArray(r.xtags) ? r.xtags : (typeof r.xtags === 'string' ? JSON.parse(r.xtags||'[]') : []),
+      tips:          Array.isArray(r.tips)  ? r.tips  : (typeof r.tips  === 'string' && r.tips  ? (r.tips.trim().startsWith('[')  ? JSON.parse(r.tips)  : r.tips.split(',').map(s=>s.trim()).filter(Boolean)) : []),
+      xtags:         Array.isArray(r.xtags) ? r.xtags : (typeof r.xtags === 'string' && r.xtags ? (r.xtags.trim().startsWith('[') ? JSON.parse(r.xtags) : r.xtags.split(',').map(s=>s.trim()).filter(Boolean)) : []),
     };
   }
 
