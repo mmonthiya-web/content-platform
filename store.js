@@ -24,7 +24,7 @@ const Store = (() => {
     'Content-Type': 'application/json',
     'apikey': SB_KEY,
     'Authorization': `Bearer ${SB_KEY}`,
-    'Prefer': 'return=representation',
+    'Prefer': 'return=representation,resolution=merge-duplicates',
   };
 
   /* ══════════════ localStorage 缓存键 ══════════════ */
