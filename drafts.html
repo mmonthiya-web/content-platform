@@ -284,7 +284,7 @@ textarea.ef-inp{line-height:1.7;}
       <div class="sbg-lbl">发布中心</div>
       <div class="ni on" onclick="window.location.href='drafts.html'"><i class="ti ti-layout-kanban"></i><span>草稿库</span><span class="nb" id="sb-draft-count">0</span></div>
       <div class="ni" onclick="window.location.href='calendar.html'"><i class="ti ti-calendar-event"></i><span>排期日历</span></div>
-      <div class="ni"><i class="ti ti-circle-check"></i><span>发布记录</span></div>
+      <div class="ni" onclick="filterStatus('published', document.querySelector('.ftab[data-s=published]'))"><i class="ti ti-circle-check"></i><span>发布记录</span></div>
     </div>
   </div>
   <div class="sb-foot">
@@ -312,12 +312,12 @@ textarea.ef-inp{line-height:1.7;}
     <!-- STAT BAR -->
     <div class="stat-bar">
       <div class="stat-card accent">
-        <div class="sc-n" id="st-total">21</div>
+        <div class="sc-n" id="st-total">0</div>
         <div class="sc-lbl">草稿总数</div>
         <div class="sc-sub" id="st-unsched">0 已排期</div>
       </div>
       <div class="stat-card" onclick="filterStatus('pending')">
-        <div class="sc-n" id="st-pending">21</div>
+        <div class="sc-n" id="st-pending">0</div>
         <div class="sc-lbl">待排期</div>
         <div class="sc-sub">未设时间</div>
       </div>
@@ -327,7 +327,7 @@ textarea.ef-inp{line-height:1.7;}
         <div class="sc-sub">小红书</div>
       </div>
       <div class="stat-card" onclick="filterStatus('published')">
-        <div class="sc-n" id="st-published">8</div>
+        <div class="sc-n" id="st-published">0</div>
         <div class="sc-lbl">本月已发</div>
         <div class="sc-sub">篇内容</div>
       </div>
@@ -507,6 +507,14 @@ Store.onChange(event => {
 buildCatChips();
 renderCards();
 updateStats();
+
+/* 支持从外部链接跳转时带 ?status=published 等参数自动切换 tab */
+(function applyUrlStatus() {
+  const s = new URLSearchParams(location.search).get('status');
+  if (!s || s === 'all') return;
+  const btn = document.querySelector(`.ftab[data-s="${s}"]`);
+  if (btn) filterStatus(s, btn);
+})();
 
 /* 当 Supabase 数据加载完成后，刷新页面显示最新数据 */
 function onStoreReady() {
