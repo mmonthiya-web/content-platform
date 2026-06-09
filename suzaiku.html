@@ -652,7 +652,7 @@ function renderCards(){
   if(!items.length){
     const isEmpty=!ITEMS.length;
     con.innerHTML=isEmpty
-      ?`<div class="empty-state"><div class="es-ic"><i class="ti ti-inbox"></i></div><div class="es-title">素材库还是空的</div><div class="es-sub">先导入一篇爆款分析结果，系统会自动提取 Hook、标题、CTA 等素材入库</div><button class="es-btn"><i class="ti ti-download"></i>导入分析结果</button></div>`
+      ?`<div class="empty-state"><div class="es-ic"><i class="ti ti-inbox"></i></div><div class="es-title">素材库还是空的</div><div class="es-sub">先导入一篇爆款分析结果，系统会自动提取 Hook、标题、CTA 等素材入库</div><button class="es-btn" onclick="showImportGuide()"><i class="ti ti-download"></i>导入分析结果</button></div>`
       :`<div class="empty-state"><div class="es-ic"><i class="ti ti-search-off"></i></div><div class="es-title">没有找到匹配的素材</div><div class="es-sub">试试调整筛选条件，或者换个关键词搜索</div></div>`;
     return;
   }
@@ -808,7 +808,7 @@ function openBDView(bd){
     <span class="sep">›</span>
     <span class="r" onclick="openBDView()">爆款拆解</span>
     <span class="sep">›</span>
-    <span class="cur">${curBD.num}</span>`;
+    <span class="cur">${curBD.title?.slice(0,15)||"拆解详情"}</span>`;
   renderBDList();renderBDDetail(curBD);
 }
 function goLibrary(){
@@ -833,7 +833,7 @@ function renderBDList(){
     el.onclick=()=>{curBD=bd;renderBDDetail(bd);renderBDList();updateBDCrumb();};
     const tags=bd.tags.map(t=>`<span class="bdl-tag" style="background:var(--linen);color:var(--mocha);">${t}</span>`).join('');
     const ext=Object.entries(bd.extracted).filter(([,v])=>v>0).map(([k,v])=>`${TYPE_META[k]?.label||k}${v}`).join(' · ');
-    el.innerHTML=`<div class="bdl-num">${bd.num}</div><div class="bdl-name">${bd.title}</div><div class="bdl-tags">${tags}</div><div class="bdl-meta">${bd.date} · ${ext}</div>`;
+    el.innerHTML=`<div class="bdl-num">${BREAKDOWNS.indexOf(bd)+1}</div><div class="bdl-name">${bd.title}</div><div class="bdl-tags">${tags}</div><div class="bdl-meta">${bd.date} · ${ext}</div>`;
     list.appendChild(el);
   });
 }
@@ -843,7 +843,7 @@ function updateBDCrumb(){
     <span class="sep">›</span>
     <span class="r" onclick="openBDView()">爆款拆解</span>
     <span class="sep">›</span>
-    <span class="cur">${curBD.num}</span>`;
+    <span class="cur">${curBD.title?.slice(0,15)||"拆解详情"}</span>`;
 }
 function renderBDDetail(bd){
   const inner=document.getElementById('bdd-inner');
@@ -859,7 +859,7 @@ function renderBDDetail(bd){
     </div>`).join('');
   inner.innerHTML=`
     <div style="margin-bottom:16px;">
-      <div class="bh-badge"><i class="ti ti-microscope"></i>爆款拆解 ${bd.num}</div>
+      <div class="bh-badge"><i class="ti ti-microscope"></i>爆款拆解 ${BREAKDOWNS.indexOf(bd)+1}</div>
       <div class="bh-title-row">
         <div class="bh-title">${bd.title}</div>
         <div class="bh-acts">
