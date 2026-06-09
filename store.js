@@ -174,8 +174,8 @@ const Store = (() => {
       formulaExample:r.formula_example,
       cta:           r.cta,
       ctaTarget:     r.cta_target,
-      tips:          Array.isArray(r.tips)  ? r.tips  : (typeof r.tips  === 'string' && r.tips  ? (r.tips.trim().startsWith('[')  ? JSON.parse(r.tips)  : r.tips.split(',').map(s=>s.trim()).filter(Boolean))  : []),
-      xtags:         Array.isArray(r.xtags) ? r.xtags : (typeof r.xtags === 'string' && r.xtags ? (r.xtags.trim().startsWith('[') ? JSON.parse(r.xtags) : r.xtags.split(',').map(s=>s.trim()).filter(Boolean)) : []),
+      tips:          Array.isArray(r.tips)  ? r.tips  : (typeof r.tips  === 'string' ? JSON.parse(r.tips||'[]')  : []),
+      xtags:         Array.isArray(r.xtags) ? r.xtags : (typeof r.xtags === 'string' ? JSON.parse(r.xtags||'[]') : []),
     };
   }
 
@@ -460,7 +460,13 @@ const Store = (() => {
   /* ══════════════ 用户设置 ══════════════ */
 
   async function _sbSetting(key, value) {
-    await _sb('POST', 'user_settings', [{ key, value }], '?on_conflict=key');
+    // PATCH if exists, POST if not — avoids upsert pkey conflict on non-pk unique columns
+    const existing = await _sb('GET', 'user_settings', null, `?key=eq.${encodeURIComponent(key)}`);
+    if (existing && existing.length > 0) {
+      await _sb('PATCH', 'user_settings', { value, updated_at: new Date().toISOString() }, `?key=eq.${encodeURIComponent(key)}`);
+    } else {
+      await _sb('POST', 'user_settings', [{ key, value }], '');
+    }
     const cache = _cacheGet(CACHE.settings) || {};
     cache[key] = value;
     _cacheSet(CACHE.settings, cache);
