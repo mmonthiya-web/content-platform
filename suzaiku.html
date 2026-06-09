@@ -872,17 +872,41 @@ function renderBDDetail(bd){
     </div>
     ${bd.summary?`<div class="bs"><div class="bs-lbl">摘要</div><div class="b-summary">${bd.summary}</div></div>`:''}
     <div class="bs">
-      <div class="bs-lbl">核心信息</div>
+      <div class="bs-lbl">HOOK 分析</div>
       <div class="kv-grid">
-        ${bd.hook?`<div class="kv full"><div class="kv-l">HOOK</div><div class="kv-v lg">${bd.hook}</div></div>`:''}
-        ${bd.hookType?`<div class="kv"><div class="kv-l">Hook 类型</div><span class="etag">${bd.hookType}</span></div>`:''}
-        ${bd.hookTrigger?`<div class="kv full"><div class="kv-l">触发原因</div><div class="kv-v">${bd.hookTrigger}</div></div>`:''}
-        ${bd.formula?`<div class="kv full"><div class="kv-l">文案公式</div><div class="kv-v mono">${bd.formula}</div></div>`:''}
-        ${bd.formulaExample?`<div class="kv full"><div class="kv-l">公式示例</div><div class="kv-v">${bd.formulaExample}</div></div>`:''}
-        ${bd.cta?`<div class="kv full"><div class="kv-l">CTA</div><div class="kv-v lg">${bd.cta}</div></div>`:''}
-        ${bd.ctaTarget?`<div class="kv"><div class="kv-l">CTA 目标</div><div class="kv-v">${bd.ctaTarget}</div></div>`:''}
+        ${bd.hook?`<div class="kv full"><div class="kv-l">开头句</div><div class="kv-v lg">${bd.hook}</div></div>`:''}
+        ${bd.hookType?`<div class="kv"><div class="kv-l">类型</div><span class="etag">${bd.hookType}</span></div>`:''}
+        ${bd.hookTrigger?`<div class="kv full"><div class="kv-l">为什么有效</div><div class="kv-v">${bd.hookTrigger}</div></div>`:''}
       </div>
     </div>
+    ${(bd.titleFormula||bd.titleFormulaWhy||bd.titleExample)?`
+    <div class="bs">
+      <div class="bs-lbl">标题公式</div>
+      <div class="kv-grid">
+        ${bd.titleFormula?`<div class="kv full"><div class="kv-l">公式</div><div class="kv-v mono">${bd.titleFormula}</div></div>`:''}
+        ${bd.titleFormulaWhy?`<div class="kv full"><div class="kv-l">为什么用这个</div><div class="kv-v">${bd.titleFormulaWhy}</div></div>`:''}
+        ${bd.titleExample?`<div class="kv full"><div class="kv-l">套用示例</div><div class="kv-v">${bd.titleExample}</div></div>`:''}
+      </div>
+    </div>`:''}
+    ${(bd.formula||bd.formulaName||bd.formulaExample)?`
+    <div class="bs">
+      <div class="bs-lbl">文案结构</div>
+      <div class="kv-grid">
+        ${bd.formulaName?`<div class="kv"><div class="kv-l">公式名称</div><span class="etag">${bd.formulaName}</span></div>`:''}
+        ${bd.formula?`<div class="kv full"><div class="kv-l">结构公式</div><div class="kv-v mono">${bd.formula}</div></div>`:''}
+        ${bd.formulaExample?`<div class="kv full"><div class="kv-l">套用示例</div><div class="kv-v">${bd.formulaExample}</div></div>`:''}
+      </div>
+    </div>`:''}
+    ${(bd.cta||bd.ctaTarget||bd.ctaScene)?`
+    <div class="bs">
+      <div class="bs-lbl">CTA 分析</div>
+      <div class="kv-grid">
+        ${bd.cta?`<div class="kv full"><div class="kv-l">CTA 文案</div><div class="kv-v lg">${bd.cta}</div></div>`:''}
+        ${bd.ctaTarget?`<div class="kv"><div class="kv-l">目标行为</div><div class="kv-v">${bd.ctaTarget}</div></div>`:''}
+        ${bd.ctaScene?`<div class="kv"><div class="kv-l">适合场景</div><div class="kv-v">${bd.ctaScene}</div></div>`:''}
+      </div>
+    </div>`:''}
+    ${bd.interaction?`<div class="bs"><div class="bs-lbl">互动引导</div><div class="b-summary">${bd.interaction}</div></div>`:''}
     ${tipsHTML?`<div class="bs"><div class="bs-lbl">运营要点</div><div class="tip-list">${tipsHTML}</div></div>`:''}
     ${kw?`<div class="bs"><div class="bs-lbl">标签</div><div class="xtags">${(bd.xtags||[]).map(t=>`<span class="xtag">${t}</span>`).join('')}</div></div>`:''}
   `;
@@ -1013,7 +1037,7 @@ function editUserName(){
     <div style="margin-bottom:16px;">
       <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--taupe);margin-bottom:6px;">快捷提示词</div>
       <div style="position:relative;">
-        <div id="prompt-box" style="font-size:11.5px;color:var(--mocha);background:var(--oyster);border:1px solid var(--border);border-radius:8px;padding:10px 40px 10px 12px;line-height:1.7;cursor:pointer;" onclick="copyPrompt()">分析这张截图，以 JSON 格式输出：{"title":"帖子标题","url":"","date":"","likes":0,"saves":0,"summary":"内容概括","hook":"开头抓眼球的句子","hookType":"情绪型/利益型/疑问型","hookTrigger":"为什么有效","titleFormula":"标题公式","titleExample":"公式示例","cta":"结尾引导语","ctaTarget":"目标行为","tips":["运营要点1"],"xtags":["标签1"]}</div>
+        <div id="prompt-box" style="font-size:11.5px;color:var(--mocha);background:var(--oyster);border:1px solid var(--border);border-radius:8px;padding:10px 40px 10px 12px;line-height:1.7;cursor:pointer;" onclick="copyPrompt()">分析这张截图，以 JSON 格式输出：{"title":"帖子标题","date":"","likes":0,"saves":0,"summary":"正文摘要不超过50字","hook":"最吸引人的开头句","hookType":"情绪型/利益型/疑问型/反差型","hookTrigger":"为什么有效1句话","titleFormula":"标题套路如数字型反差型痛点型疑问型利益型","titleFormulaWhy":"为什么是这个套路1句","titleExample":"套用公式的新例子","formula":"文案结构公式用方括号标记模块","formulaName":"公式名称","formulaExample":"套用公式的新内容例子1句","cta":"CTA文案","ctaTarget":"目标行为","ctaScene":"适合场景","interaction":"互动引导技巧","tips":["运营要点1","运营要点2"],"tags":["标签1","标签2","标签3"]}</div>
         <button onclick="copyPrompt()" title="复制" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;color:var(--taupe);font-size:14px;"><i class="ti ti-copy"></i></button>
       </div>
       <div id="prompt-copied" style="display:none;font-size:11px;color:var(--sage);margin-top:4px;">✓ 已复制提示词</div>

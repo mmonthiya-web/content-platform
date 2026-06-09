@@ -140,42 +140,59 @@ const Store = (() => {
   /* 爆款拆解：JS ↔ DB */
   function _bdToRow(b) {
     return {
-      id:              b.id,
-      title:           b.title           || '',
-      url:             b.url             || '',
-      date:            b.date            || '',
-      likes:           b.likes           || 0,
-      saves:           b.saves           || 0,
-      summary:         b.summary         || '',
-      hook:            b.hook            || '',
-      hook_type:       b.hookType        || '',
-      hook_trigger:    b.hookTrigger     || '',
-      formula:         b.formula         || '',
-      formula_example: b.formulaExample  || '',
-      cta:             b.cta             || '',
-      cta_target:      b.ctaTarget       || '',
-      tips:            b.tips            || [],
-      xtags:           b.xtags           || [],
+      id:                   b.id,
+      title:                b.title              || '',
+      url:                  b.url                || '',
+      date:                 b.date               || '',
+      likes:                b.likes              || 0,
+      saves:                b.saves              || 0,
+      summary:              b.summary            || '',
+      hook:                 b.hook               || '',
+      hook_type:            b.hookType           || '',
+      hook_trigger:         b.hookTrigger        || '',
+      formula:              b.formula            || '',
+      formula_name:         b.formulaName        || '',
+      formula_example:      b.formulaExample     || '',
+      cta:                  b.cta                || '',
+      cta_target:           b.ctaTarget          || '',
+      cta_scene:            b.ctaScene           || '',
+      interaction:          b.interaction        || '',
+      title_formula:        b.titleFormula       || '',
+      title_formula_why:    b.titleFormulaWhy    || '',
+      title_example:        b.titleExample       || '',
+      tips:                 b.tips               || [],
+      xtags:                b.xtags || b.tags    || [],
     };
   }
   function _rowToBd(r) {
+    function _parseArr(v) {
+      if (Array.isArray(v)) return v;
+      if (typeof v === 'string' && v) return v.trim().startsWith('[') ? JSON.parse(v) : v.split(',').map(s=>s.trim()).filter(Boolean);
+      return [];
+    }
     return {
-      id:            r.id,
-      title:         r.title,
-      url:           r.url,
-      date:          r.date,
-      likes:         r.likes,
-      saves:         r.saves,
-      summary:       r.summary,
-      hook:          r.hook,
-      hookType:      r.hook_type,
-      hookTrigger:   r.hook_trigger,
-      formula:       r.formula,
-      formulaExample:r.formula_example,
-      cta:           r.cta,
-      ctaTarget:     r.cta_target,
-      tips:          Array.isArray(r.tips)  ? r.tips  : (typeof r.tips  === 'string' && r.tips  ? (r.tips.trim().startsWith('[')  ? JSON.parse(r.tips)  : r.tips.split(',').map(s=>s.trim()).filter(Boolean)) : []),
-      xtags:         Array.isArray(r.xtags) ? r.xtags : (typeof r.xtags === 'string' && r.xtags ? (r.xtags.trim().startsWith('[') ? JSON.parse(r.xtags) : r.xtags.split(',').map(s=>s.trim()).filter(Boolean)) : []),
+      id:               r.id,
+      title:            r.title,
+      url:              r.url,
+      date:             r.date,
+      likes:            r.likes,
+      saves:            r.saves,
+      summary:          r.summary,
+      hook:             r.hook,
+      hookType:         r.hook_type,
+      hookTrigger:      r.hook_trigger,
+      formula:          r.formula,
+      formulaName:      r.formula_name        || '',
+      formulaExample:   r.formula_example,
+      cta:              r.cta,
+      ctaTarget:        r.cta_target,
+      ctaScene:         r.cta_scene           || '',
+      interaction:      r.interaction         || '',
+      titleFormula:     r.title_formula       || '',
+      titleFormulaWhy:  r.title_formula_why   || '',
+      titleExample:     r.title_example       || '',
+      tips:             _parseArr(r.tips),
+      xtags:            _parseArr(r.xtags),
     };
   }
 
@@ -392,9 +409,11 @@ const Store = (() => {
         id, title: bd.title, url: bd.url||'', date: dateStr,
         likes: bd.likes||0, saves: bd.saves||0, summary: bd.summary||'',
         hook: bd.hook||'', hookType: bd.hookType||'', hookTrigger: bd.hookTrigger||'',
-        formula: bd.titleFormula||'', formulaExample: bd.titleExample||'',
-        cta: bd.cta||'', ctaTarget: bd.ctaTarget||'',
-        tips: bd.tips||[], xtags: bd.xtags||bd.keywords||[],
+        titleFormula: bd.titleFormula||'', titleFormulaWhy: bd.titleFormulaWhy||'', titleExample: bd.titleExample||'',
+        formula: bd.formula||'', formulaName: bd.formulaName||'', formulaExample: bd.formulaExample||'',
+        cta: bd.cta||'', ctaTarget: bd.ctaTarget||'', ctaScene: bd.ctaScene||'',
+        interaction: bd.interaction||'',
+        tips: bd.tips||[], xtags: bd.tags||bd.xtags||bd.keywords||[],
       });
 
       const push = (type, title, body) => newItems.push({
@@ -403,8 +422,9 @@ const Store = (() => {
       });
 
       if (bd.hook)         push('hook',    bd.hook,         bd.hookTrigger?`触发原因：${bd.hookTrigger}`:'');
-      if (bd.titleFormula) push('title',   bd.titleFormula, bd.titleExample||'');
-      if (bd.cta)          push('cta',     bd.cta,          bd.ctaTarget?`目标：${bd.ctaTarget}`:'');
+      if (bd.titleFormula) push('title',   bd.titleFormula, [bd.titleFormulaWhy, bd.titleExample].filter(Boolean).join('\n'));
+      if (bd.cta)          push('cta',     bd.cta,          [bd.ctaTarget?`目标：${bd.ctaTarget}`:'', bd.ctaScene?`场景：${bd.ctaScene}`:''].filter(Boolean).join('\n'));
+      if (bd.interaction)  push('inspire', `互动技巧：${bd.title}`, bd.interaction);
       if (bd.summary)      push('inspire', bd.title,        bd.summary);
     });
 
