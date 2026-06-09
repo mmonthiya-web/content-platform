@@ -211,7 +211,14 @@ const Store = (() => {
       settingRows.forEach(r => { obj[r.key] = r.value; });
       _cacheSet(CACHE.settings, obj);
       if (obj.cats) {
+        // 云端有分类数据 → 以云端为准写入缓存
         try { _cacheSet(CACHE.cats, JSON.parse(obj.cats)); } catch {}
+      } else {
+        // 云端没有分类记录（首次使用）→ 把 DEFAULT_CATS 写入 Supabase 持久化
+        // 这样后续的增删操作才能真正保存
+        const initCats = _cacheGet(CACHE.cats) || DEFAULT_CATS;
+        _cacheSet(CACHE.cats, initCats);
+        await _sbSetting('cats', JSON.stringify(initCats));
       }
     }
 
