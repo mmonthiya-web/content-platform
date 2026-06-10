@@ -259,6 +259,79 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
 .pipe-wrap{animation:fadeUp .3s ease .05s both;}
 .body-grid{animation:fadeUp .3s ease .1s both;}
 *{scrollbar-width:thin;scrollbar-color:var(--khaki) transparent;}
+
+/* ═══════════════════════════
+   MOBILE  ≤ 768px
+═══════════════════════════ */
+@media(max-width:768px){
+  body{height:auto;overflow:auto;flex-direction:column;}
+
+  /* 隐藏侧边栏 */
+  .sb{display:none;}
+
+  /* 主区域占满 */
+  .main{width:100%;overflow:visible;}
+
+  /* Topbar 简化 */
+  .topbar{padding:0 14px;gap:8px;}
+  .tb-date{display:none;}
+  .s-box{display:none;}
+  .tb-btn.g{display:none;}
+
+  /* 内容区可滚动 */
+  .content{overflow:visible;height:auto;padding-bottom:72px;}
+
+  /* Hero — 竖向堆叠 */
+  .hero{padding:14px 14px 12px;}
+  .hero-inner{flex-direction:column;gap:12px;}
+  .hero-left{flex-shrink:unset;}
+  .compose-col{width:100%;}
+  .hints{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px;}
+  .hints::-webkit-scrollbar{height:0;}
+
+  /* Pipeline — 2×2 grid on mobile */
+  .pipe-wrap{padding:10px 14px 12px;}
+  .pipe-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+  .pipe-stage{margin-left:0!important;}
+  .pipe-stage::before{display:none!important;}
+  .pc{padding:8px 10px;}
+  .pc-n{font-size:20px;}
+
+  /* Body grid — 单栏 */
+  .body-grid{grid-template-columns:1fr;overflow:visible;}
+  .left-p{padding:14px 14px 10px;overflow:visible;border-right:none;}
+  .right-p{padding:14px 14px 10px;overflow:visible;background:transparent;}
+
+  /* Bottom nav bar */
+  .mob-nav{display:flex!important;}
+}
+
+/* Bottom nav — 默认隐藏，mobile 时显示 */
+.mob-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  height:60px;
+  background:#fff;
+  border-top:1px solid var(--border);
+  z-index:200;
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+.mob-nav a{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;text-decoration:none;color:var(--taupe);font-size:10px;font-weight:500;
+  font-family:'Poppins',sans-serif;padding:6px 0;transition:color .12s;position:relative;
+}
+.mob-nav a.on{color:var(--caramel);}
+.mob-nav a i{font-size:22px;}
+.mob-nav a .mnb{
+  position:absolute;top:4px;right:calc(50% - 18px);
+  background:var(--caramel);color:#fff;font-size:9px;font-weight:700;
+  min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;
+}
+.mob-nav a .bar{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:20px;height:2px;background:var(--caramel);border-radius:0 0 2px 2px;
+}
 </style>
 </head>
 <body>
@@ -494,6 +567,15 @@ body{font-family:'Poppins',sans-serif;background:var(--oyster);color:var(--ink);
   </div>
 </div>
 
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mob-nav" id="mob-nav">
+  <a href="index.html" class="on"><div class="bar"></div><i class="ti ti-layout-dashboard"></i>首页</a>
+  <a href="suzaiku.html"><i class="ti ti-stack-2"></i>素材库</a>
+  <a href="postcraft.html"><i class="ti ti-writing"></i>创作</a>
+  <a href="drafts.html"><i class="ti ti-layout-kanban"></i>草稿库<span class="mnb" id="mob-draft-nb" style="display:none">0</span></a>
+  <a href="calendar.html"><i class="ti ti-calendar-event"></i>排期</a>
+</nav>
+
 <script>
 /* ── 日期 ── */
 const now = new Date();
@@ -552,6 +634,8 @@ function renderDashboard() {
   // 草稿库数字（发布中心的第一个 nb）
   const draftNb = document.getElementById('sb-draft-nb');
   if (draftNb) draftNb.textContent = drafts.length;
+  const mobDraftNb = document.getElementById('mob-draft-nb');
+  if (mobDraftNb) { mobDraftNb.textContent = drafts.length; mobDraftNb.style.display = drafts.length ? 'flex' : 'none'; }
 
   /* 今日任务（从草稿推导） */
   renderTasks(stats, drafts);
