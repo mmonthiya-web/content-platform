@@ -2,6 +2,8 @@
 
 小红书内容运营工作台 — 素材管理、AI 文案生成、内容排期一站式工具。
 
+支持桌面端与移动端，同一个网址自动适配。
+
 ## 页面说明
 
 | 文件 | 页面 | 功能 |
@@ -19,6 +21,8 @@
 2. 进入仓库 Settings → Pages
 3. Source 选择 `main` branch，folder 选择 `/ (root)`
 4. 保存后访问 `https://你的用户名.github.io/仓库名/`
+
+桌面浏览器和手机浏览器访问同一个网址即可，无需单独的移动端版本。
 
 ## 使用说明
 
@@ -40,6 +44,7 @@ Brand Context、自定义语气标签、生成历史这三项存储在 Supabase 
 ## 技术栈
 
 - 纯 HTML/CSS/JavaScript，无需构建工具
+- 响应式设计，≤768px 自动切换为移动端底部导航栏布局
 - 字体：Poppins + DM Serif Display（Google Fonts）
 - 图标：Tabler Icons
 - AI：Anthropic Claude API（claude-sonnet-4）
